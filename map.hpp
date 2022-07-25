@@ -100,21 +100,33 @@ namespace ft
 			tree_allocator_.construct(data_);
 		}
 
-#if 0
 		template <class InputIterator>
 		map(InputIterator first, InputIterator last,
 			const key_compare& comp = key_compare(),
 			const allocator_type& alloc = allocator_type())
 		{
+			// TODO: 최적화 하기
+			data_ = tree_allocator_.allocate(1);
+			tree_allocator_.construct(data_);
 			for (; first != last; first++)
 				data_->insert(*first);
 		}
 
 		map(const map& x)
 		{
-			// level tranverse
+			data_ = tree_allocator_.allocate(1);
+			tree_allocator_.construct(data_);
+			*data_ = *(x.data_);
 		}
-#endif
+
+		map& operator=(const map& x)
+		{
+			*data_ = *(x.data_);
+			allocator_ = x.allocator_;
+			tree_allocator_ = x.tree_allocator_;
+			return (*this);
+		}
+
 		~map()
 		{
 			tree_allocator_.destroy(data_);
@@ -278,13 +290,6 @@ namespace ft
 			return (std::numeric_limits<node_size_type>::max() /
 					std::max(2, static_cast<int>(sizeof(node_value_type))));
 		}
-
-		// map& operator=(const map& x)
-		// {
-		// 	std::allocator<node_size_type> alloc;
-		// 	node_size_type* i = alloc.allocate(x.size());
-		// 	while ()
-		// }
 
 		mapped_type& operator[](const key_type& k)
 		{

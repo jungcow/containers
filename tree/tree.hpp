@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../type.hpp"  //TODO: 지우기
+#include "./queue.hpp"
 
 namespace ft
 {
@@ -23,19 +24,27 @@ public:
 	typedef typename Node::value_type value_type;
 	typedef typename Node::node_size_type node_size_type;
 	typedef typename Node::BalanceNode BalanceNode;
+	typedef typename Node::node_allocator_type node_allocator_type;
+	typedef typename Node::node_value_type node_value_type;
 
 private:
 	BalanceNode* root_;
 	BalanceNode* foot_;
 	node_size_type size_;
+	node_allocator_type nalloc;
 
 public:
-	Tree() : root_(NULL), size_(0)
+	Tree() : root_(NULL), foot_(NULL), size_(0), nalloc(node_allocator_type())
 	{
 		root_ = createNode();
 		foot_ = createNode();
 		foot_->setRank(size_ + 1);
 		root_->setRight(foot_);
+	}
+
+	Tree(const Tree& other) : nalloc(node_allocator_type())
+	{
+		*this = other;
 	}
 
 	~Tree()
@@ -45,7 +54,42 @@ public:
 
 	Tree& operator=(const Tree& other)
 	{
-		// TODO: map의 operator=을 위해
+		typedef typename node_allocator_type::template rebind<BalanceNode*>::other pointer_allocator;
+		ft::Queue<BalanceNode*, pointer_allocator> srcQueue(other.size(), pointer_allocator());
+		ft::Queue<BalanceNode*, pointer_allocator> destQueue(other.size(), pointer_allocator());
+		BalanceNode* dest;
+		BalanceNode* src;
+
+		deleteAllNodes(root_);
+		src = other.getRoot();
+		root_ = nalloc.allocate(1);
+
+		srcQueue.enqueue(src);
+		destQueue.enqueue(root_);
+		while (!srcQueue.empty())
+		{
+			src = srcQueue.dequeue();
+			dest = destQueue.dequeue();
+			nalloc.construct(dest, *src);
+			dest->setLeft(NULL);
+			dest->setRight(NULL);
+
+			if (src->getLeft())
+			{
+				dest->setLeft(nalloc.allocate(1));
+				destQueue.enqueue(dest->getLeft());
+				srcQueue.enqueue(src->getLeft());
+			}
+			if (src->getRight())
+			{
+				dest->setRight(nalloc.allocate(1));
+				destQueue.enqueue(dest->getRight());
+				srcQueue.enqueue(src->getRight());
+			}
+		}
+		size_ = other.size();
+		foot_ = root_->getRight();
+		return (*this);
 	}
 
 	BalanceNode* getRoot(void) const
@@ -212,6 +256,10 @@ private:
 	BalanceNode* createNode(const value_type& value = value_type())
 	{
 		return Node::createNode(value);
+	}
+	BalanceNode* createNode(const BalanceNode& other)
+	{
+		return Node::createNode(other);
 	}
 
 	void deleteNode(BalanceNode* node)

@@ -85,8 +85,8 @@ public:
 										   value_pointer_type>::type>& other)
 		: NodeBase(other),
 		  rank_(other.getRank()),
-		  left_(other.getLeft()),
-		  right_(other.getRight())
+		  left_(NULL),
+		  right_(NULL)
 	{
 	}
 
@@ -198,6 +198,10 @@ public:
 	BalanceNode* createNode(const value_type& value = value_type())
 	{
 		return static_cast<BalanceNode&>(*this).createNode(value);
+	}
+	BalanceNode* createNode(const BalanceNode& other)
+	{
+		return static_cast<BalanceNode&>(*this).createNode(other);
 	}
 
 	void deleteNode(BalanceNode* node)

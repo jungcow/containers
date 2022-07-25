@@ -223,6 +223,14 @@ int main(void)
 			std::cout << (*begin).first << std::endl;
 			// std::cout << reinterpret_cast<void*>(&(begin.base())) << std::endl;
 		}
+		ft::swap(mp2, mp);
+		begin = mp2.begin();
+		end = mp2.end();
+		std::cout << "mp2 size: " << mp2.size() << std::endl;
+		for (; begin != end; begin++)
+		{
+			std::cout << (*begin).first << std::endl;
+		}
 	}
 	{
 		ft::map<char, int> mp;
@@ -239,6 +247,34 @@ int main(void)
 		std::cout << std::boolalpha;
 		std::cout << (mp == mp2) << std::endl;
 		std::cout << (mp < mp2) << std::endl;
+	}
+	{
+		ft::map<char, int> mp1;
+		for (int i = 0; i < 17; i++)
+		{
+			mp1.insert(ft::make_pair('a' + i, i));
+		}
+		ft::map<char, int> mp2(mp1.begin(), mp1.end());
+		ft::map<char, int> mp3 = mp2;
+		ft::map<char, int>::iterator begin = mp3.begin();
+		ft::map<char, int>::iterator end = mp3.end();
+		std::cout << "check\n";
+		mp2['a'] = 100;
+		for (; begin != end; begin++)
+		{
+			std::cout << (*begin).first << ": ";
+			std::cout << (*begin).second << std::endl;
+		}
+		ft::map<char, int> mp4 = mp2;
+		// mp4 = mp3;
+		mp2['a'] = 200;
+		begin = mp4.begin();
+		end = mp4.end();
+		for (; begin != end; begin++)
+		{
+			std::cout << (*begin).first << ": ";
+			std::cout << (*begin).second << std::endl;
+		}
 	}
 	system("leaks a.out");
 

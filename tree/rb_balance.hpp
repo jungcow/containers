@@ -36,7 +36,7 @@ public:  // TODO: 지정자 확인하기
 	/**
 	 * RB Node Type
 	 */
-	typedef typename allocator_type::template rebind<RBBalance>::other node_allocator_type;
+	typedef typename base_node::node_allocator_type node_allocator_type;
 	typedef typename node_allocator_type::value_type node_value_type;
 	typedef typename node_allocator_type::pointer node_pointer;
 	typedef typename node_allocator_type::reference node_reference;
@@ -390,6 +390,12 @@ public:
 	{
 		Node* newNode = rb_node_allocator_.allocate(1);
 		rb_node_allocator_.construct(newNode, node_value_type(value));
+		return newNode;
+	}
+	Node* createNode(const Node& other)
+	{
+		Node* newNode = rb_node_allocator_.allocate(1);
+		rb_node_allocator_.construct(newNode, node_value_type(other));
 		return newNode;
 	}
 
