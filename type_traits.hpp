@@ -10,6 +10,9 @@
  * is_pointer
  * is_array
  * is_trivial_destructible_junior
+ * is_pair
+ * remove_const
+ * remove_pointer
  */
 
 #include <cstdint>
@@ -135,6 +138,66 @@ namespace ft
 								  ft::is_pointer<T>::value ||
 								  ft::is_array<T>::value;
 	};
+
+	template <class T>
+	struct is_pair
+	{
+	private:
+		struct two
+		{
+			char c[2];
+		};
+
+		template <class U>
+		static two test(...);
+
+		template <class U>
+		static char test(typename ft::check_type<typename U::first_type>::type* = 0,
+						 typename ft::check_type<typename U::second_type>::type* = 0);
+
+	public:
+		static const bool value = (sizeof(test<T>(0, 0)) == 1);
+	};
+
+	template <class T>
+	struct remove_const
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_const<T const>
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_pointer
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_pointer<T*>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* const>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* volatile>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* const volatile>
+	{
+		typedef T type;
+	};
+
 }
 
 #endif
