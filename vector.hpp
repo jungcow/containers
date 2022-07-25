@@ -174,7 +174,7 @@ namespace ft
 
 		size_type capacity() const
 		{
-			return (capacity_);
+			return (capacity_ - 1);
 		}
 
 		void clear()

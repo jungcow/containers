@@ -2,32 +2,33 @@
 #define __FT_ITERATOR_H__
 
 #include <cstddef>  // ptrdiff_t
+#include <iterator>
 
 #include "type_traits.hpp"  // input_iterator_tag
 
 namespace ft
 {
-	/**
-	 * iterator_tag class
-	 *
-	 * iterator가 어떤 iterator인지를 단지 판별하는 용도로 내부는
-	 * 비어있다.
-	 */
-	struct input_iterator_tag
-	{
-	};
-	struct output_iterator_tag
-	{
-	};
-	struct forward_iterator_tag : ft::input_iterator_tag
-	{
-	};
-	struct bidirectional_iterator_tag : ft::forward_iterator_tag
-	{
-	};
-	struct random_access_iterator_tag : ft::bidirectional_iterator_tag
-	{
-	};
+	// /**
+	//  * iterator_tag class
+	//  *
+	//  * iterator가 어떤 iterator인지를 단지 판별하는 용도로 내부는
+	//  * 비어있다.
+	//  */
+	// struct input_iterator_tag
+	// {
+	// };
+	// struct output_iterator_tag
+	// {
+	// };
+	// struct forward_iterator_tag : ft::input_iterator_tag
+	// {
+	// };
+	// struct bidirectional_iterator_tag : ft::forward_iterator_tag
+	// {
+	// };
+	// struct random_access_iterator_tag : ft::bidirectional_iterator_tag
+	// {
+	// };
 
 	/**
 	 * iterator class
@@ -110,7 +111,7 @@ namespace ft
 		typedef T value_type;
 		typedef T* pointer;
 		typedef T& reference;
-		typedef random_access_iterator_tag iterator_category;
+		typedef std::random_access_iterator_tag iterator_category;
 	};
 	template <class T>
 	struct iterator_traits<const T*>
@@ -119,7 +120,7 @@ namespace ft
 		typedef T value_type;
 		typedef const T* pointer;
 		typedef const T& reference;
-		typedef random_access_iterator_tag iterator_category;
+		typedef std::random_access_iterator_tag iterator_category;
 	};
 
 	/**
@@ -363,13 +364,18 @@ namespace ft
 		return (rhs.base_ - lhs.base_);
 	}
 
-	template <class InputIterator>
-	typename iterator_traits<InputIterator>::difference_type
-	distance(InputIterator first, InputIterator last)
+	template <class ForwardIterator>
+	typename iterator_traits<ForwardIterator>::difference_type
+	distance(ForwardIterator first, ForwardIterator last)
 	{
-		typename iterator_traits<InputIterator>::difference_type diff = 0;
-		for (; first != last; first++)
-			diff++;
+		typename iterator_traits<ForwardIterator>::difference_type diff = 0;
+		if (ft::is_same<std::random_access_iterator_tag, typename ft::iterator_traits<ForwardIterator>::iterator_category>::value)
+			diff = last - first;
+		else
+		{
+			for (; first != last; first++)
+				diff++;
+		}
 		return diff;
 	}
 }

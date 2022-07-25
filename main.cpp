@@ -65,4 +65,10 @@ int main(void)
 		ft::vector<int> stdvec(stdli.begin(), stdli.end());
 		std::cout << "vec from list size: " << stdvec.size() << std::endl;
 	}
+	{
+		ft::vector<int>::iterator veci;
+		ft::vector<int>::const_iterator vecci;
+
+		vecci = veci;
+	}
 }
