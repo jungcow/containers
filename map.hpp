@@ -4,7 +4,8 @@
 #include <cstddef>     // ptrdiff_t
 #include <functional>  // std::less, std::binary_function
 
-#include "iterator.hpp"  // ft::reverse_iterator
+#include "algorithm.hpp"  // ft::equal, ft::lexicographical_compare
+#include "iterator.hpp"   // ft::reverse_iterator
 #include "tree/node_base.hpp"
 #include "tree/node_wrapper.hpp"
 #include "tree/tree.hpp"
@@ -62,9 +63,10 @@ namespace ft
 		typedef typename ft::NodeWrapper<node_base>::node_value_type node_value_type;
 
 		typedef typename ft::NodeWrapper<node_base>::BalanceNode balance_node_type;
-		typedef const typename ft::NodeWrapper<node_base>::BalanceNode const_balance_node_type;
+		typedef typename ft::NodeWrapper<const_node_base>::BalanceNode const_balance_node_type;
 
 		typedef ft::Tree<node_type> map_tree;
+		typedef typename node_allocator_type::template rebind<map_tree>::other tree_allocator_type;
 
 		typedef typename node_type::iterator node_iterator;
 		typedef typename const_node_type::iterator const_node_iterator;
@@ -78,7 +80,6 @@ namespace ft
 
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
-		typedef typename node_allocator_type::template rebind<map_tree>::other tree_allocator_type;
 
 	private:
 		map_tree* data_;
@@ -126,7 +127,7 @@ namespace ft
 		}
 		const_iterator begin() const
 		{
-			return const_iterator(data_->getFirst(), data_);
+			return const_iterator(iterator(data_->getFirst(), data_));
 		}
 
 		void clear()
@@ -151,7 +152,7 @@ namespace ft
 		}
 		const_iterator end() const
 		{
-			return const_iterator(data_->getFoot(), data_);
+			return const_iterator(iterator(data_->getFoot(), data_));
 		}
 
 		ft::pair<const_iterator, const_iterator> equal_range(const key_type& k) const
@@ -277,9 +278,14 @@ namespace ft
 			return (std::numeric_limits<node_size_type>::max() /
 					std::max(2, static_cast<int>(sizeof(node_value_type))));
 		}
-#if 0
-		map& operator=(const map& x);
-#endif
+
+		// map& operator=(const map& x)
+		// {
+		// 	std::allocator<node_size_type> alloc;
+		// 	node_size_type* i = alloc.allocate(x.size());
+		// 	while ()
+		// }
+
 		mapped_type& operator[](const key_type& k)
 		{
 			return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
@@ -349,48 +355,71 @@ namespace ft
 		{
 			return (value_compare(compare_key_));
 		}
-#if 0
 		template <class K, class V, class Comp, class A>
 		friend bool operator==(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
+							   const map<K, V, Comp, A>& rhs);
 		template <class K, class V, class Comp, class A>
 		friend bool operator!=(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
+							   const map<K, V, Comp, A>& rhs);
 		template <class K, class V, class Comp, class A>
 		friend bool operator<(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
+							  const map<K, V, Comp, A>& rhs);
 		template <class K, class V, class Comp, class A>
 		friend bool operator<=(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
+							   const map<K, V, Comp, A>& rhs);
 		template <class K, class V, class Comp, class A>
 		friend bool operator>(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
+							  const map<K, V, Comp, A>& rhs);
 		template <class K, class V, class Comp, class A>
 		friend bool operator>=(const map<K, V, Comp, A>& lhs,
-				const map<K, V, Comp, A>& rhs);
-#endif
+							   const map<K, V, Comp, A>& rhs);
+
+		template <class K, class V, class Comp, class A>
+		friend void swap(map<Key, T, Compare, Alloc>& x, map<K, V, Comp, A>& y);
 	};
 
-#if 0
 	template <class K, class V, class Comp, class A>
 	bool operator==(const map<K, V, Comp, A>& lhs,
-			const map<K, V, Comp, A>& rhs);
+					const map<K, V, Comp, A>& rhs)
+	{
+		return (lhs.size() == rhs.size() &&
+				ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+	}
 	template <class K, class V, class Comp, class A>
 	bool operator!=(const map<K, V, Comp, A>& lhs,
-		const map<K, V, Comp, A>& rhs);
+					const map<K, V, Comp, A>& rhs)
+	{
+		return !(lhs == rhs);
+	}
 	template <class K, class V, class Comp, class A>
 	bool operator<(const map<K, V, Comp, A>& lhs,
-			const map<K, V, Comp, A>& rhs);
+				   const map<K, V, Comp, A>& rhs)
+	{
+		return ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+	}
 	template <class K, class V, class Comp, class A>
 	bool operator<=(const map<K, V, Comp, A>& lhs,
-			const map<K, V, Comp, A>& rhs);
+					const map<K, V, Comp, A>& rhs)
+	{
+		return !(rhs < lhs);
+	}
 	template <class K, class V, class Comp, class A>
 	bool operator>(const map<K, V, Comp, A>& lhs,
-			const map<K, V, Comp, A>& rhs);
+				   const map<K, V, Comp, A>& rhs)
+	{
+		return (rhs < lhs);
+	}
 	template <class K, class V, class Comp, class A>
 	bool operator>=(const map<K, V, Comp, A>& lhs,
-			const map<K, V, Comp, A>& rhs);
-#endif
+					const map<K, V, Comp, A>& rhs)
+	{
+		return !(lhs < rhs);
+	}
+	template <class K, class V, class Comp, class A>
+	void swap(map<K, V, Comp, A>& x, map<K, V, Comp, A>& y)
+	{
+		x.swap(y);
+	}
 
 	/**
 	 * @class: value_compare
@@ -441,6 +470,8 @@ namespace ft
 
 	public:
 		typedef typename Iterator::value_type value_type;
+		typedef typename value_type::node_size_type size_type;
+
 		typedef typename Iterator::pointer pointer;
 		typedef typename Iterator::reference reference;
 		typedef typename Iterator::difference_type difference_type;
@@ -449,7 +480,7 @@ namespace ft
 	private:
 		Iterator base_;  // Iterator: node_iterator
 		TreePointer tree_;
-		size_t order_;
+		size_type order_;
 
 	public:
 		map_iterator() : order_(0)
@@ -463,13 +494,13 @@ namespace ft
 		{
 		}
 
-		explicit map_iterator(const Iterator& otherIter, const TreePointer tree)  // node_iterator로 생성
+		explicit map_iterator(const Iterator& otherIter, TreePointer tree)  // node_iterator로 생성
 			: base_(otherIter), tree_(tree)
 		{
 			order_ = tree_.getOrder(*otherIter);
 		}
 
-		explicit map_iterator(const NodePointer node, const TreePointer tree)  // node_iterator로 생성
+		explicit map_iterator(NodePointer node, TreePointer tree)  // node_iterator로 생성
 			: base_(node), tree_(tree), order_(0)
 		{
 			order_ = tree_->getOrder(*base_);
@@ -493,7 +524,7 @@ namespace ft
 		{
 			return tree_;
 		}
-		size_t order(void) const
+		size_type order(void) const
 		{
 			return order_;
 		}
@@ -515,7 +546,7 @@ namespace ft
 
 		map_iterator& operator++()
 		{
-			base_ = Iterator(tree_->OS_Select(tree_->getRoot()->getLeft(), ++order_));
+			base_ = Iterator(reinterpret_cast<NodePointer>(tree_->OS_Select(tree_->getRoot()->getLeft(), ++order_)));
 			return (*this);
 		}
 		map_iterator operator++(int)

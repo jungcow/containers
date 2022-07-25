@@ -8,7 +8,6 @@ template <class N>
 class ft::NodeWrapper<N>::RBBalance : public TNode<RBBalance>::type
 {
 private:
-	// friend class NodeWrapper;  // TODO: 안써도 되는지 체크하기
 	typedef RBBalance Node;
 
 public:

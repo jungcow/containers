@@ -51,7 +51,7 @@ public:
 	 * derived type
 	 */
 	typedef BalanceType BalanceNode;
-	typedef typename allocator_type::template rebind<BalanceType>::other node_allocator_type;
+	typedef typename allocator_type::template rebind<BalanceNode>::other node_allocator_type;
 	typedef typename node_allocator_type::value_type node_value_type;
 	typedef typename node_allocator_type::pointer node_pointer;
 	typedef typename node_allocator_type::reference node_reference;
@@ -62,8 +62,8 @@ public:
 	// typedef typename node_allocator_type::difference_type node_difference_type;
 
 public:
-	typedef node_iterator<BalanceType*, value_iterator_type, value_pointer_type> iterator;
-	typedef node_iterator<const BalanceType*, value_iterator_type, value_pointer_type> const_iterator;
+	typedef node_iterator<BalanceNode*, value_iterator_type, value_pointer_type> iterator;
+	typedef node_iterator<const BalanceNode*, value_iterator_type, value_pointer_type> const_iterator;
 
 private:
 	node_size_type rank_;
@@ -292,8 +292,8 @@ public:
 	{
 	}
 
-	explicit node_iterator(const Iterator otherNode)
-		: base_(otherNode)
+	explicit node_iterator(Iterator otherNode)
+		: base_(reinterpret_cast<Iterator>(otherNode))
 	{
 	}
 

@@ -43,6 +43,11 @@ public:
 		deleteAllNodes(root_);
 	}
 
+	Tree& operator=(const Tree& other)
+	{
+		// TODO: map의 operator=을 위해
+	}
+
 	BalanceNode* getRoot(void) const
 	{
 		return root_;
@@ -56,7 +61,9 @@ public:
 	{
 		BalanceNode* node = root_->getLeft();
 
-		while (node && node->getLeft())
+		if (!node)
+			return foot_;
+		while (node->getLeft())
 			node = node->getLeft();
 		return node;
 	}
@@ -125,7 +132,7 @@ public:
 		return getOrder(root_->getLeft(), value);
 	}
 
-	BalanceNode* OS_Select(BalanceNode* node, size_t i)
+	BalanceNode* OS_Select(BalanceNode* node, size_t i) const
 	{
 		if (i == size_ + 1)
 			return foot_;
