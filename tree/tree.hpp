@@ -3,7 +3,6 @@
 
 #include <iostream>
 
-#include "../type.hpp"  //TODO: 지우기
 #include "./queue.hpp"
 
 namespace ft
@@ -18,14 +17,16 @@ namespace ft
  * @param Node: Node for Tree
  */
 template <class Node>
-class ft::Tree : public Node
+class ft::Tree
 {
-public:
-	typedef typename Node::value_type value_type;
-	typedef typename Node::node_size_type node_size_type;
+private:
 	typedef typename Node::BalanceNode BalanceNode;
+	typedef typename Node::node_size_type node_size_type;
 	typedef typename Node::node_allocator_type node_allocator_type;
 	typedef typename Node::node_value_type node_value_type;
+
+public:
+	typedef typename Node::value_type value_type;
 
 private:
 	BalanceNode* root_;
@@ -42,7 +43,7 @@ public:
 		root_->setRight(foot_);
 	}
 
-	Tree(const Tree& other) : nalloc(node_allocator_type())
+	Tree(const Tree& other) : root_(NULL), foot_(NULL), size_(0), nalloc(node_allocator_type())
 	{
 		*this = other;
 	}
@@ -72,7 +73,6 @@ public:
 			dest = destQueue.dequeue();
 			nalloc.construct(dest, *src);
 			dest->setLeft(NULL);
-			dest->setRight(NULL);
 
 			if (src->getLeft())
 			{
@@ -133,14 +133,14 @@ public:
 
 	BalanceNode* find(const value_type& value) const
 	{
-		return (Node::find(root_->getLeft(), value));
+		return (Node().find(root_->getLeft(), value));
 	}
 
 	bool insert(const value_type& value)
 	{
 		bool inserted = false;
 
-		root_->setLeft(Node::insert(root_->getLeft(), value, inserted));
+		root_->setLeft(Node().insert(root_->getLeft(), value, inserted));
 		if (inserted)
 			size_++;
 		setRootNode(root_->getLeft());
@@ -151,7 +151,7 @@ public:
 	{
 		bool inserted = false;
 
-		root_->setLeft(Node::insert(node, value, inserted));
+		root_->setLeft(Node().insert(node, value, inserted));
 		if (inserted)
 			size_++;
 		setRootNode(root_->getLeft());
@@ -164,7 +164,7 @@ public:
 
 		if (empty())
 			return false;
-		root_->setLeft(Node::erase(root_->getLeft(), value, root_, erased));
+		root_->setLeft(Node().erase(root_->getLeft(), value, root_, erased));
 		if (erased)
 			size_--;
 		setRootNode(root_->getLeft());
@@ -215,7 +215,7 @@ public:
 private:
 	node_size_type getOrder(BalanceNode* node, const value_type& value) const
 	{
-		return Node::getOrder(node, value);
+		return Node().getOrder(node, value);
 	}
 
 	void printByInOrderTraversal(BalanceNode* node) const
@@ -255,31 +255,31 @@ private:
 
 	BalanceNode* createNode(const value_type& value = value_type())
 	{
-		return Node::createNode(value);
+		return Node().createNode(value);
 	}
 	BalanceNode* createNode(const BalanceNode& other)
 	{
-		return Node::createNode(other);
+		return Node().createNode(other);
 	}
 
 	void deleteNode(BalanceNode* node)
 	{
-		Node::deleteNode(node);
+		Node().deleteNode(node);
 	}
 
 	void deleteAllNodes(BalanceNode* node)
 	{
-		Node::deleteAllNodes(node);
+		Node().deleteAllNodes(node);
 	}
 
 	void setRootNode(BalanceNode* node)
 	{
-		Node::setRootNode(node);
+		Node().setRootNode(node);
 	}
 
 	void printNode(BalanceNode* node) const
 	{
-		Node::printNode(node);
+		Node().printNode(node);
 	}
 };
 

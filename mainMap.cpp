@@ -275,6 +275,9 @@ int main(void)
 			std::cout << (*begin).first << ": ";
 			std::cout << (*begin).second << std::endl;
 		}
+		begin = mp4.begin();
+		ft::map<char, int>::reverse_iterator mri(begin);
+		// std::cout <<  << std::endl;
 	}
 	system("leaks a.out");
 

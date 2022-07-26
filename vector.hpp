@@ -98,7 +98,6 @@ namespace ft
 		}
 		~vector()
 		{
-			// TODO: Trivial destructible 에 대해서 최적화 하기
 			clear();
 			allocator_.deallocate(data_, capacity_);
 			size_ = 0;
@@ -393,7 +392,6 @@ namespace ft
 
 		void resize(size_type n, value_type val = value_type())  // throw(std::bad_alloc, std::length_error)
 		{
-			// TODO: optimization using checking is type trivial destructible
 			if (n > max_size())
 				throw std::length_error("resize");
 			if (size_ > n)

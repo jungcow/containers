@@ -38,14 +38,13 @@ public:
 	typedef typename base::compare_type compare_type;
 	typedef typename base::allocator_type allocator_type;
 
-	typedef typename allocator_type::size_type size_type;
-	typedef typename allocator_type::difference_type difference_type;
-
 	typedef typename allocator_type::value_type value_type;
 	typedef typename allocator_type::pointer pointer;
 	typedef typename allocator_type::const_pointer const_pointer;
 	typedef typename allocator_type::reference reference;
 	typedef typename allocator_type::const_reference const_reference;
+	typedef typename allocator_type::size_type size_type;
+	typedef typename allocator_type::difference_type difference_type;
 
 	/**
 	 * derived type
@@ -59,7 +58,7 @@ public:
 	typedef typename node_allocator_type::const_reference node_const_reference;
 
 	typedef typename node_allocator_type::size_type node_size_type;
-	// typedef typename node_allocator_type::difference_type node_difference_type;
+	typedef typename node_allocator_type::difference_type node_difference_type;
 
 public:
 	typedef node_iterator<BalanceNode*, value_iterator_type, value_pointer_type> iterator;
@@ -264,22 +263,23 @@ template <class Iterator, class ValueIter, class ValuePointer>
 class ft::node::node_iterator
 {
 private:
-	typedef ft::iterator<std::bidirectional_iterator_tag, typename ft::remove_pointer<Iterator>::type> iterator;
+	typedef ft::iterator<std::bidirectional_iterator_tag, typename ft::remove_pointer<Iterator>::type> node_iterator_type;
+	typedef ft::iterator<std::bidirectional_iterator_tag, typename ft::remove_pointer<ValueIter>::type> iterator_type;
 
 public:
 	// for value type
-	typedef typename ft::remove_pointer<ValueIter>::type inner_value_type;
-	typedef inner_value_type* inner_pointer;
-	typedef inner_value_type& inner_reference;
-	typedef const inner_value_type* const_inner_pointer;
-	typedef const inner_value_type& const_inner_reference;
+	typedef typename iterator_type::value_type value_type;
+	typedef typename iterator_type::pointer pointer;
+	typedef typename iterator_type::reference reference;
+	typedef typename iterator_type::difference_type difference_type;
+	typedef typename iterator_type::iterator_category iterator_category;
 
 	// for node type
-	typedef typename iterator::value_type value_type;
-	typedef typename iterator::pointer pointer;
-	typedef typename iterator::reference reference;
-	typedef typename iterator::difference_type difference_type;
-	typedef typename iterator::iterator_category iterator_category;
+	typedef typename node_iterator_type::value_type node_value_type;
+	typedef typename node_iterator_type::pointer node_pointer;
+	typedef typename node_iterator_type::reference node_reference;
+	typedef typename node_iterator_type::difference_type node_difference_type;
+	typedef typename node_iterator_type::iterator_category node_iterator_category;
 
 private:
 	Iterator base_;  // same with BalanceNode*
@@ -318,20 +318,20 @@ public:
 		return base_;
 	}
 
-	const_inner_reference operator*() const
+	reference operator*() const
 	{
 		return (base_->getValue());
 	}
-	inner_reference operator*()
+	reference operator*()
 	{
 		return (base_->getValue());
 	}
 
-	const_inner_pointer operator->() const
+	pointer operator->() const
 	{
 		return &(base_->getValue());
 	}
-	inner_pointer operator->()
+	pointer operator->()
 	{
 		return &(base_->getValue());
 	}

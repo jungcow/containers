@@ -13,7 +13,7 @@ namespace ft
 		size_t size_, front_, rear_;
 
 	public:
-		Queue(size_t len, Alloc allocator) : length_(len), allocator_(allocator)
+		Queue(size_t len, Alloc allocator) : allocator_(allocator), length_(len)
 		{
 			size_ = front_ = rear_ = 0;
 			elem_ = allocator_.allocate(length_);

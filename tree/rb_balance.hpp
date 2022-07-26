@@ -1,7 +1,6 @@
 #ifndef __FT_RB_BALANCE_H__
 #define __FT_RB_BALANCE_H__
 
-#include "../type.hpp"  // TODO: 지우기
 #include "node_wrapper.hpp"
 
 template <class N>
@@ -32,7 +31,7 @@ public:
 	typedef typename allocator_type::size_type size_type;
 	typedef typename allocator_type::difference_type difference_type;
 
-public:  // TODO: 지정자 확인하기
+public:
 	/**
 	 * RB Node Type
 	 */

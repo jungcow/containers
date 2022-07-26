@@ -161,7 +161,9 @@ namespace ft
 		 */
 		typename reverse_iterator::reference operator*() const
 		{
-			return *(base_ - 1);
+			iterator_type tmp = base_;
+
+			return *(--tmp); // bidirectional iterator는 base - 1을 지원하지 않음. 따라서 base - 1 대신 --tmp로 사용
 		}
 
 		reverse_iterator operator+(typename reverse_iterator::difference_type n) const
