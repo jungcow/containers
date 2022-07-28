@@ -1,6 +1,7 @@
 #ifndef __FT_MAP_H__
 #define __FT_MAP_H__
 
+#include <climits>     // ptrdiff_max TODO: 확인하기
 #include <cstddef>     // ptrdiff_t
 #include <functional>  // std::less, std::binary_function
 
@@ -168,11 +169,11 @@ namespace ft
 		}
 		iterator end()
 		{
-			return iterator(data_->getFoot(), data_);
+			return iterator(data_->getEndNode(), data_);
 		}
 		const_iterator end() const
 		{
-			return const_iterator(iterator(data_->getFoot(), data_));
+			return const_iterator(iterator(data_->getEndNode(), data_));
 		}
 
 		ft::pair<const_iterator, const_iterator> equal_range(const key_type& k) const
@@ -188,17 +189,15 @@ namespace ft
 		{
 			data_->erase(*position);
 		}
-
 		size_type erase(const key_type& k)
 		{
 			return static_cast<size_type>(data_->erase(ft::make_pair(k, mapped_type())));
 		}
 		void erase(iterator first, iterator last)
 		{
-			--last;
-			for (; last != first; last--)
+			while (first != last)
 			{
-				data_->erase(*last);
+				data_->erase(*first++);
 			}
 		}
 
@@ -234,30 +233,34 @@ namespace ft
 
 		iterator insert(iterator position, const value_type& val)
 		{
-			iterator tmp = position;
 			balance_node_type* node;
+			// iterator tmp = position;
 
-			if (position == end())
-				--position;
-			if (compare_value_(*position, val))
-			{
-				++tmp;
-				if (tmp == end() || compare_value_(val, *tmp))
-					data_->insert(position.base().base(), val);
-				else
-					data_->insert(val);
-			}
-			else if (compare_value_(val, *position))
-			{
-				if (position == begin())
-					data_->insert(position.base().base(), val);
-				if (compare_value_(*(--tmp), val))
-					data_->insert(position.base().base(), val);
-				else
-					data_->insert(val);
-			}
-			else
-				return position;
+			// if (position == end())
+			// 	--position;
+			// if (compare_value_(*position, val))
+			// {
+			// 	++tmp;
+			// 	if (tmp == end() || compare_value_(val, *tmp))
+			// 		data_->insert(position.base().base(), val);
+			// 	else
+			// 		data_->insert(val);
+			// }
+			// else if (compare_value_(val, *position))
+			// {
+			// 	if (position == begin())
+			// 		data_->insert(position.base().base(), val);
+			// 	if (compare_value_(*(--tmp), val))
+			// 		data_->insert(position.base().base(), val);
+			// 	else
+			// 		data_->insert(val);
+			// }
+			// else
+			// 	return position;
+			// for ()
+			data_->insert(val);
+			// std::cout << "&&&&&&&&&&&&&&& is Tree Right? &&&&&&&&&&&&&&&&&&&&&&&&\n";
+			// std::cout << data_->isFollowedAllRules() << std::endl;
 			node = data_->find(val);
 			if (!node)
 				return end();
@@ -267,9 +270,9 @@ namespace ft
 		template <class InputIterator>
 		void insert(InputIterator first, InputIterator last)
 		{
-			for (; first != last; first++)
+			while (first != last)
 			{
-				data_->insert(*first);
+				data_->insert(*first++);
 			}
 		}
 
@@ -325,11 +328,6 @@ namespace ft
 		size_type size() const
 		{
 			return data_->size();
-		}
-
-		void print() const
-		{
-			data_->printByInOrderTraversal();
 		}
 
 		void swap(map& x)
@@ -389,6 +387,12 @@ namespace ft
 
 		template <class K, class V, class Comp, class A>
 		friend void swap(map<Key, T, Compare, Alloc>& x, map<K, V, Comp, A>& y);
+
+	public:  // TODO: 지우기
+		void print() const
+		{
+			data_->printByInOrderTraversal();
+		}
 	};
 
 	template <class K, class V, class Comp, class A>
@@ -493,37 +497,33 @@ namespace ft
 	private:
 		Iterator base_;  // Iterator: node_iterator
 		TreePointer tree_;
-		node_size_type order_;
 
 	public:
-		map_iterator() : order_(0)
+		map_iterator()
 		{
 		}
 
 		template <class Iter, class Tp, class I>
 		map_iterator(const map_iterator<
 					 Iter, Tp, I, typename ft::enable_if<ft::is_same<I, VPointer>::value, VPointer>::type>& other)
-			: base_(other.base()), tree_(other.tree()), order_(other.order())
+			: base_(other.base()), tree_(other.tree())
 		{
 		}
 
 		explicit map_iterator(const Iterator& otherIter, TreePointer tree)  // node_iterator로 생성
 			: base_(otherIter), tree_(tree)
 		{
-			order_ = tree_.getOrder(*otherIter);
 		}
 
 		explicit map_iterator(node_pointer node, TreePointer tree)  // node_iterator로 생성
-			: base_(node), tree_(tree), order_(0)
+			: base_(node), tree_(tree)
 		{
-			order_ = tree_->getOrder(*base_);
 		}
 
 		map_iterator& operator=(const map_iterator& other)
 		{
 			base_ = other.base_;
 			tree_ = other.tree_;
-			order_ = other.order_;
 			return (*this);
 		}
 
@@ -537,17 +537,13 @@ namespace ft
 		{
 			return tree_;
 		}
-		node_size_type order(void) const
-		{
-			return order_;
-		}
 
-		reference operator*() const
+		const reference operator*() const
 		{
 			return (*base_);
 		}
 
-		reference operator*()
+		const reference operator*()
 		{
 			return (*base_);
 		}
@@ -559,7 +555,15 @@ namespace ft
 
 		map_iterator& operator++()
 		{
-			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getRoot()->getLeft(), ++order_)));
+			node_size_type order;
+
+			if (base_.base() == reinterpret_cast<node_pointer>(tree_->getEndNode()))
+				order = tree_->size() + 1;
+			else
+				order = tree_->getOrder(*base_);
+			// std::cout << "before order: " << order << std::endl;
+			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), ++order)));
+			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator++(int)
@@ -570,7 +574,15 @@ namespace ft
 		}
 		map_iterator& operator--()
 		{
-			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getRoot()->getLeft(), --order_)));
+			node_size_type order;
+
+			if (base_.base() == reinterpret_cast<node_pointer>(tree_->getEndNode()))
+				order = tree_->size() + 1;
+			else
+				order = tree_->getOrder(*base_);
+			// std::cout << "before order: " << order << std::endl;
+			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), --order)));
+			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator--(int)

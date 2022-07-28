@@ -67,7 +67,7 @@ public:
 	{
 	}
 
-	const_reference getValue(void) const
+	reference getValue(void) const
 	{
 		return (val_);
 	}

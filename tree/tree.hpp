@@ -29,28 +29,27 @@ public:
 	typedef typename Node::value_type value_type;
 
 private:
-	BalanceNode* root_;
-	BalanceNode* foot_;
+	BalanceNode* end_node_;
 	node_size_type size_;
 	node_allocator_type nalloc;
 
 public:
-	Tree() : root_(NULL), foot_(NULL), size_(0), nalloc(node_allocator_type())
+	Tree() : end_node_(NULL), size_(0), nalloc(node_allocator_type())
 	{
-		root_ = createNode();
-		foot_ = createNode();
-		foot_->setRank(size_ + 1);
-		root_->setRight(foot_);
+		end_node_ = createNode();
+		end_node_->setRank(Node().calculateRankFrom(end_node_));
 	}
 
-	Tree(const Tree& other) : root_(NULL), foot_(NULL), size_(0), nalloc(node_allocator_type())
+	Tree(const Tree& other) : end_node_(NULL), size_(0), nalloc(node_allocator_type())
 	{
+		end_node_ = createNode();
+		end_node_->setRank(Node().calculateRankFrom(end_node_));
 		*this = other;
 	}
 
 	~Tree()
 	{
-		deleteAllNodes(root_);
+		deleteAllNodes(end_node_);
 	}
 
 	Tree& operator=(const Tree& other)
@@ -61,12 +60,12 @@ public:
 		BalanceNode* dest;
 		BalanceNode* src;
 
-		deleteAllNodes(root_);
-		src = other.getRoot();
-		root_ = nalloc.allocate(1);
+		deleteAllNodes(end_node_->getLeft());
+		src = other.getEndNode()->getLeft();
+		end_node_->setLeft(nalloc.allocate(1));
 
 		srcQueue.enqueue(src);
-		destQueue.enqueue(root_);
+		destQueue.enqueue(end_node_->getLeft());
 		while (!srcQueue.empty())
 		{
 			src = srcQueue.dequeue();
@@ -88,25 +87,19 @@ public:
 			}
 		}
 		size_ = other.size();
-		foot_ = root_->getRight();
+		end_node_->setRank(Node().calculateRankFrom(end_node_));
 		return (*this);
 	}
 
-	BalanceNode* getRoot(void) const
+	BalanceNode* getEndNode(void) const
 	{
-		return root_;
-	}
-	BalanceNode* getFoot(void) const
-	{
-		return foot_;
+		return end_node_;
 	}
 
 	BalanceNode* getFirst(void) const
 	{
-		BalanceNode* node = root_->getLeft();
+		BalanceNode* node = end_node_;
 
-		if (!node)
-			return foot_;
 		while (node->getLeft())
 			node = node->getLeft();
 		return node;
@@ -114,7 +107,7 @@ public:
 
 	BalanceNode* getLast(void) const
 	{
-		BalanceNode* node = root_->getLeft();
+		BalanceNode* node = end_node_->getLeft();
 
 		while (node && node->getRight())
 			node = node->getRight();
@@ -133,17 +126,17 @@ public:
 
 	BalanceNode* find(const value_type& value) const
 	{
-		return (Node().find(root_->getLeft(), value));
+		return (Node().find(end_node_->getLeft(), value));
 	}
 
 	bool insert(const value_type& value)
 	{
 		bool inserted = false;
 
-		root_->setLeft(Node().insert(root_->getLeft(), value, inserted));
+		end_node_->setLeft(Node().insert(end_node_->getLeft(), value, inserted));
 		if (inserted)
 			size_++;
-		setRootNode(root_->getLeft());
+		setRootNode(end_node_);
 		return (inserted);
 	}
 
@@ -151,10 +144,10 @@ public:
 	{
 		bool inserted = false;
 
-		root_->setLeft(Node().insert(node, value, inserted));
+		end_node_->setLeft(Node().insert(node, value, inserted));
 		if (inserted)
 			size_++;
-		setRootNode(root_->getLeft());
+		setRootNode(end_node_);
 		return (inserted);
 	}
 
@@ -164,22 +157,23 @@ public:
 
 		if (empty())
 			return false;
-		root_->setLeft(Node().erase(root_->getLeft(), value, root_, erased));
+		end_node_->setLeft(Node().erase(end_node_->getLeft(), value, end_node_, erased));
 		if (erased)
 			size_--;
-		setRootNode(root_->getLeft());
+		setRootNode(end_node_);
 		return (erased);
 	}
 
 	node_size_type getOrder(const value_type& value) const
 	{
-		return getOrder(root_->getLeft(), value);
+		return getOrder(end_node_->getLeft(), value);
+		// return getOrder(end_node_, value);
 	}
 
 	BalanceNode* OS_Select(BalanceNode* node, size_t i) const
 	{
-		if (i == size_ + 1)
-			return foot_;
+		if (i > size_)
+			return end_node_;
 		if (i < 1 || !node)
 			return NULL;
 
@@ -198,7 +192,7 @@ public:
 
 	void printByInOrderTraversal() const
 	{
-		printByInOrderTraversal(root_->getLeft());
+		printByInOrderTraversal(end_node_->getLeft());
 		std::cout << "\n";
 	}
 
@@ -206,9 +200,9 @@ public:
 	{
 		bool result = true;
 
-		checkBlackNodeCount(root_->getLeft(), &result);
+		checkBlackNodeCount(end_node_->getLeft(), &result);
 		if (result)
-			checkTwoRedNodesContinuously(root_->getLeft(), &result);
+			checkTwoRedNodesContinuously(end_node_->getLeft(), &result);
 		return result;
 	}
 

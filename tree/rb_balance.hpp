@@ -106,11 +106,18 @@ public:
 		Nil_ = nil;
 	}
 
-	void setRootNode(Node* node)
+	void setRootNode(Node* endNode)
 	{
-		if (node == NULL)
+		if (!endNode || !endNode->getLeft())
 			return;
-		node->setColor(Black);
+		if (isNil(endNode->getLeft()))
+		{
+			deleteAllNodes(endNode->getLeft());
+			endNode->setLeft(NULL);
+		}
+		if (!isBlack(endNode->getLeft()))
+			endNode->getLeft()->setColor(Black);
+		endNode->setRank(this->calculateRankFrom(endNode));
 	}
 
 	void printNode(Node* node) const
@@ -120,6 +127,8 @@ public:
 			std::cout << "R";
 		else if (node->getColor() == Black)
 			std::cout << "B";
+		else if (node->getColor() == DoubleBlack)
+			std::cout << "DB";
 		std::cout << ")" << '-';
 	}
 
@@ -465,20 +474,25 @@ private:
 		Node* toDelChild;
 		Node* toDelParent;
 
+		// set toDel, toDelChild, toDelParent
 		toDel = node;
-
 		toDelChild = toDel->getLeft() ? toDel->getLeft() : toDel->getRight();
 		if (!toDelChild)
 			toDelChild = createNilNode();
 		toDelParent = parent;
 
+		// disconnect toDel node
 		changeMyChild(toDel, toDelParent, toDelChild);
+
+		// set toDelChild's color
 		if (!isRed(toDel) && !isRed(toDelChild))
 			toDelChild->setColor(DoubleBlack);
 		else if (isRed(toDel) && !isRed(toDelChild))
 			toDelChild->setColor(Black);
 		else if (!isRed(toDel) && isRed(toDelChild))
 			toDelChild->setColor(Black);
+
+		// free node
 		deleteNode(toDel);
 		return (toDelChild);
 	}
@@ -489,6 +503,7 @@ private:
 		Node* toDelChild;
 		Node* toDelParent;
 
+		// set toDel, toDelChild, toDelParent
 		toDel = this->getMinNodeFrom(node->getRight());
 		toDelChild = getMinChildNodeFrom(node->getRight());
 		if (!toDelChild)
@@ -498,6 +513,7 @@ private:
 			toDelParent = getMinParentNodeFrom(node->getRight());
 		changeMyChild(toDel, toDelParent, toDelChild);
 
+		// set toDelChild's color
 		if (!isRed(toDel) && !isRed(toDelChild))
 			toDelChild->setColor(DoubleBlack);
 		else if (isRed(toDel) && !isRed(toDelChild))
@@ -505,16 +521,18 @@ private:
 		else if (!isRed(toDel) && isRed(toDelChild))
 			toDelChild->setColor(Black);
 
+		// disconnect toDel node
 		toDel->setLeft(node->getLeft());
 		toDel->setRight(node->getRight());
 		toDel->setColor(node->getColor());
 		changeMyChild(node, parent, toDel);
 
+		// free node
 		deleteNode(node);
 		node = toDel;
 
-		if (isDoubleBlack(toDelChild))
-			node->setRight(postEraseImpl(node->getRight(), toDelChild->getValue(), node));
+		// fix
+		node->setRight(postEraseImpl(node->getRight(), toDelChild->getValue(), node));
 		node = fixup(node);
 		node->setRank(this->calculateRankFrom(node));
 		return node;

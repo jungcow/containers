@@ -225,6 +225,8 @@ public:
 
 	node_size_type calculateRankFrom(BalanceNode* node)
 	{
+		if (!node)
+			return 0;
 		node_size_type lRank = 0;
 		node_size_type rRank = 0;
 		if (node->getLeft())
