@@ -208,7 +208,7 @@ public:
 		return static_cast<BalanceNode&>(*this).createNode(other);
 	}
 
-	void deleteNode(BalanceNode* node)
+	BalanceNode* deleteNode(BalanceNode* node)
 	{
 		return static_cast<BalanceNode&>(*this).deleteNode(node);
 	}

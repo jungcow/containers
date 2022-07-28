@@ -131,8 +131,6 @@ namespace ft
 		map& operator=(const map& x)
 		{
 			*data_ = *(x.data_);
-			allocator_ = x.allocator_;
-			tree_allocator_ = x.tree_allocator_;
 			return (*this);
 		}
 

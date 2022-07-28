@@ -66,16 +66,17 @@ public:
 		end_node_->setLeft(deleteAllNodes(end_node_->getLeft()));
 		size_ = other.size();
 		src = other.getEndNode()->getLeft();
+		if (!src)
+			return (*this);
 		end_node_->setLeft(nalloc.allocate(1));
 
 		srcQueue.enqueue(src);
 		destQueue.enqueue(end_node_->getLeft());
-		while (src && !srcQueue.empty())
+		while (!srcQueue.empty())
 		{
 			src = srcQueue.dequeue();
 			dest = destQueue.dequeue();
 			nalloc.construct(dest, *src);
-			dest->setLeft(NULL);
 
 			if (src->getLeft())
 			{
@@ -262,9 +263,9 @@ private:
 		return Node().createNode(other);
 	}
 
-	void deleteNode(BalanceNode* node)
+	BalanceNode* deleteNode(BalanceNode* node)
 	{
-		Node().deleteNode(node);
+		return Node().deleteNode(node);
 	}
 
 	BalanceNode* deleteAllNodes(BalanceNode* node)

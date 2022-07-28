@@ -257,15 +257,9 @@ public:
 		}
 
 		if (isNil(node->getLeft()))
-		{
-			deleteNode(node->getLeft());
-			node->setLeft(NULL);
-		}
+			node->setLeft(deleteNode(node->getLeft()));
 		else if (isNil(node->getRight()))
-		{
-			deleteNode(node->getRight());
-			node->setRight(NULL);
-		}
+			node->setRight(deleteNode(node->getRight()));
 		return node;
 	}
 
@@ -406,10 +400,11 @@ public:
 		return newNode;
 	}
 
-	void deleteNode(Node* node)
+	BalanceNode* deleteNode(Node* node)
 	{
 		rb_node_allocator_.destroy(node);
 		rb_node_allocator_.deallocate(node, 1);
+		return NULL;
 	}
 
 	BalanceNode* deleteAllNodes(Node* node)
@@ -456,7 +451,7 @@ private:
 	}
 
 	/**
-	 * @param myChild: my child
+	 * @param myChild: current child
 	 * @param me: parent of myChild
 	 * @param otherChild: to be my child soon
 	 */
@@ -493,6 +488,8 @@ private:
 			toDelChild->setColor(Black);
 
 		// free node
+		toDel->setLeft(NULL);
+		toDel->setRight(NULL);
 		deleteNode(toDel);
 		return (toDelChild);
 	}
@@ -528,9 +525,11 @@ private:
 		changeMyChild(node, parent, toDel);
 
 		// free node
+		node->setLeft(NULL);
+		node->setRight(NULL);
 		deleteNode(node);
-		node = toDel;
 
+		node = toDel;
 		// fix
 		node->setRight(postEraseImpl(node->getRight(), toDelChild->getValue(), node));
 		node = fixup(node);
@@ -613,10 +612,10 @@ private:
 		if (isNil(node))
 		{
 			if (isLeftChild(node, parent))
-				parent->setLeft(NULL);
+				parent->setLeft(deleteNode(node));
 			else
-				parent->setRight(NULL);
-			deleteNode(node);
+				parent->setRight(deleteNode(node));
+			// deleteNode(node); // TODO: comment 지우기
 		}
 		return parent;
 	}
@@ -628,11 +627,11 @@ private:
 		node->setColor(Black);
 		if (isNil(node))
 		{
-			deleteNode(node);
 			if (isLeftChild(node, parent))
-				parent->setLeft(NULL);
+				parent->setLeft(deleteNode(node));
 			else
-				parent->setRight(NULL);
+				parent->setRight(deleteNode(node));
+			// deleteNode(node);
 			parent->setRank(this->calculateRankFrom(parent));
 		}
 		return parent;
@@ -670,11 +669,11 @@ private:
 		node->setColor(Black);  // double black에서 black으로 완화시키기
 		if (isNil(node))
 		{
-			deleteNode(node);
 			if (isLeft)
-				parent->setLeft(NULL);
+				parent->setLeft(deleteNode(node));
 			else
-				parent->setRight(NULL);
+				parent->setRight(deleteNode(node));
+			// deleteNode(node);
 			parent->setRank(this->calculateRankFrom(parent));
 		}
 		grandParent->setRank(this->calculateRankFrom(grandParent));
