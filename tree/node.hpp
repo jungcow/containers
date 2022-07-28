@@ -156,15 +156,20 @@ public:
 		rank_ = r;
 	}
 
-	BalanceNode* find(BalanceNode* node, const value_type& value) const
+	BalanceNode* find(BalanceNode* node, const value_type& value, BalanceNode* parent, BalanceNode** arrived) const
 	{
 		if (node == NULL)
+		{
+			std::cout << "\n\nNot Found!!\n\n";
+			*arrived = parent;
 			return NULL;
+		}
 
 		if (compareValue(node->getValue(), value))
-			return find(node->getRight(), value);
+			return find(node->getRight(), value, node, arrived);
 		else if (compareValue(value, node->getValue()))
-			return find(node->getLeft(), value);
+			return find(node->getLeft(), value, node, arrived);
+		*arrived = node;
 		return node;
 	}
 

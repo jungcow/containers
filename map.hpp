@@ -158,7 +158,7 @@ namespace ft
 
 		size_type count(const key_type& k) const
 		{
-			if (data_->find(ft::make_pair(k, mapped_type())))
+			if (data_->find(ft::make_pair(k, mapped_type())).first)
 				return static_cast<size_type>(true);
 			return static_cast<size_type>(false);
 		}
@@ -203,7 +203,7 @@ namespace ft
 
 		iterator find(const key_type& k)
 		{
-			balance_node_type* node = data_->find(value_type(k, mapped_type()));
+			balance_node_type* node = data_->find(value_type(k, mapped_type())).first;
 
 			if (node == NULL)
 				return end();
@@ -211,7 +211,7 @@ namespace ft
 		}
 		const_iterator find(const key_type& k) const
 		{
-			const_balance_node_type* node = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())));
+			const_balance_node_type* node = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())).first);
 
 			if (node == NULL)
 				return end();
@@ -228,7 +228,7 @@ namespace ft
 			bool inserted;
 
 			inserted = data_->insert(val);
-			return ft::pair<iterator, bool>(iterator(data_->find(val), data_), inserted);
+			return ft::pair<iterator, bool>(iterator(data_->find(val).first, data_), inserted);
 		}
 
 		iterator insert(iterator position, const value_type& val)
@@ -261,7 +261,7 @@ namespace ft
 			data_->insert(val);
 			// std::cout << "&&&&&&&&&&&&&&& is Tree Right? &&&&&&&&&&&&&&&&&&&&&&&&\n";
 			// std::cout << data_->isFollowedAllRules() << std::endl;
-			node = data_->find(val);
+			node = data_->find(val).first;
 			if (!node)
 				return end();
 			return iterator(node, data_);
@@ -283,17 +283,17 @@ namespace ft
 
 		iterator lower_bound(const key_type& k)
 		{
-			balance_node_type* node = data_->find(value_type(k, mapped_type()));
-			if (!node)
-				return end();
-			return iterator(node, data_);
+			balance_node_type* arrived = data_->find(value_type(k, mapped_type())).second;
+			if (this->compare_key_(arrived->getValue().first, k))
+				return ++iterator(arrived, data_);
+			return iterator(arrived, data_);
 		}
 		const_iterator lower_bound(const key_type& k) const
 		{
-			const_balance_node_type* node = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())));
-			if (!node)
-				return end();
-			return const_iterator(node, data_);
+			const_balance_node_type* arrived = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())).second);
+			if (this->compare_key_(arrived->getValue().first, k))
+				return ++const_iterator(arrived, data_);
+			return const_iterator(arrived, data_);
 		}
 
 		size_type max_size() const throw()
@@ -349,17 +349,17 @@ namespace ft
 
 		iterator upper_bound(const key_type& k)
 		{
-			balance_node_type* node = data_->find(value_type(k, mapped_type()));
-			if (!node)
-				return end();
-			return ++(iterator(node, data_));
+			balance_node_type* arrived = data_->find(value_type(k, mapped_type())).second;
+			if (this->compare_key_(k, arrived->getValue().first))
+				return iterator(arrived, data_);
+			return ++iterator(arrived, data_);
 		}
 		const_iterator upper_bound(const key_type& k) const
 		{
-			const_balance_node_type* node = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())));
-			if (!node)
-				return end();
-			return ++(const_iterator(node, data_));
+			const_balance_node_type* arrived = reinterpret_cast<const_balance_node_type*>(data_->find(value_type(k, mapped_type())).second);
+			if (this->compare_key_(k, arrived->getValue().first))
+				return const_iterator(arrived, data_);
+			return ++const_iterator(arrived, data_);
 		}
 
 		value_compare value_comp() const
