@@ -563,6 +563,14 @@ namespace ft
 				order = tree_->getOrder(*base_);
 			// std::cout << "before order: " << order << std::endl;
 			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), ++order)));
+			if (!base_.base())
+			{
+				std::cout << "base is null!?\n";
+			}
+			else if (base_.base() == reinterpret_cast<node_pointer>(tree_->getEndNode()))
+			{
+				// std::cout << "now is in End Node\n";
+			}
 			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}

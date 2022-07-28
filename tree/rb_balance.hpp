@@ -677,6 +677,7 @@ private:
 				parent->setRight(NULL);
 			parent->setRank(this->calculateRankFrom(parent));
 		}
+		grandParent->setRank(this->calculateRankFrom(grandParent));
 		return grandParent;
 	}
 };

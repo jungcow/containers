@@ -173,9 +173,15 @@ public:
 	BalanceNode* OS_Select(BalanceNode* node, size_t i) const
 	{
 		if (i > size_)
+		{
+			// std::cout << "size is over, size: " << size_ << "return end node\n";
 			return end_node_;
+		}
 		if (i < 1 || !node)
+		{
+			// std::cout << "OS_Select: why NULL?! -> i: " << i << "\n";
 			return NULL;
+		}
 
 		size_t r;
 		if (!node->getLeft())
