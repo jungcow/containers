@@ -160,7 +160,7 @@ public:
 	{
 		if (node == NULL)
 		{
-			std::cout << "\n\nNot Found!!\n\n";
+			// std::cout << "\n\nNot Found!!\n\n"; // TODO: 주석 지우기
 			*arrived = parent;
 			return NULL;
 		}
@@ -213,7 +213,7 @@ public:
 		return static_cast<BalanceNode&>(*this).deleteNode(node);
 	}
 
-	void deleteAllNodes(BalanceNode* node)
+	BalanceNode* deleteAllNodes(BalanceNode* node)
 	{
 		return static_cast<BalanceNode&>(*this).deleteAllNodes(node);
 	}

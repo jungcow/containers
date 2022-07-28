@@ -112,8 +112,7 @@ public:
 			return;
 		if (isNil(endNode->getLeft()))
 		{
-			deleteAllNodes(endNode->getLeft());
-			endNode->setLeft(NULL);
+			endNode->setLeft(deleteAllNodes(endNode->getLeft()));
 		}
 		if (!isBlack(endNode->getLeft()))
 			endNode->getLeft()->setColor(Black);
@@ -413,14 +412,15 @@ public:
 		rb_node_allocator_.deallocate(node, 1);
 	}
 
-	void deleteAllNodes(Node* node)
+	BalanceNode* deleteAllNodes(Node* node)
 	{
 		if (node == NULL)
-			return;
-		deleteAllNodes(node->getRight());
-		deleteAllNodes(node->getLeft());
+			return NULL;
+		node->setRight(deleteAllNodes(node->getRight()));
+		node->setLeft(deleteAllNodes(node->getLeft()));
 		rb_node_allocator_.destroy(node);
 		rb_node_allocator_.deallocate(node, 1);
+		return NULL;
 	}
 
 protected:

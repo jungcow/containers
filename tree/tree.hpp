@@ -55,13 +55,16 @@ public:
 
 	Tree& operator=(const Tree& other)
 	{
+		if (this->end_node_ == other.end_node_)
+			return (*this);
 		typedef typename node_allocator_type::template rebind<BalanceNode*>::other pointer_allocator;
 		ft::Queue<BalanceNode*, pointer_allocator> srcQueue(other.size(), pointer_allocator());
 		ft::Queue<BalanceNode*, pointer_allocator> destQueue(other.size(), pointer_allocator());
 		BalanceNode* dest;
 		BalanceNode* src;
 
-		deleteAllNodes(end_node_->getLeft());
+		end_node_->setLeft(deleteAllNodes(end_node_->getLeft()));
+		size_ = other.size();
 		src = other.getEndNode()->getLeft();
 		end_node_->setLeft(nalloc.allocate(1));
 
@@ -87,7 +90,6 @@ public:
 				srcQueue.enqueue(src->getRight());
 			}
 		}
-		size_ = other.size();
 		end_node_->setRank(Node().calculateRankFrom(end_node_));
 		return (*this);
 	}
@@ -99,7 +101,7 @@ public:
 
 	BalanceNode* getFirst(void) const
 	{
-		BalanceNode* node = end_node_;
+		BalanceNode* node = this->end_node_;
 
 		while (node->getLeft())
 			node = node->getLeft();
@@ -132,7 +134,6 @@ public:
 
 		foundNode = Node().find(end_node_->getLeft(), value, end_node_, &arrivedNode);
 		return ft::make_pair(foundNode, arrivedNode);
-		// return (Node().find(end_node_->getLeft(), value, node));
 	}
 
 	bool insert(const value_type& value)
@@ -178,15 +179,9 @@ public:
 	BalanceNode* OS_Select(BalanceNode* node, size_t i) const
 	{
 		if (i > size_)
-		{
-			// std::cout << "size is over, size: " << size_ << "return end node\n";
 			return end_node_;
-		}
 		if (i < 1 || !node)
-		{
-			// std::cout << "OS_Select: why NULL?! -> i: " << i << "\n";
 			return NULL;
-		}
 
 		size_t r;
 		if (!node->getLeft())
@@ -272,9 +267,9 @@ private:
 		Node().deleteNode(node);
 	}
 
-	void deleteAllNodes(BalanceNode* node)
+	BalanceNode* deleteAllNodes(BalanceNode* node)
 	{
-		Node().deleteAllNodes(node);
+		return Node().deleteAllNodes(node);
 	}
 
 	void setRootNode(BalanceNode* node)
