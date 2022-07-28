@@ -66,7 +66,7 @@ public:
 
 		srcQueue.enqueue(src);
 		destQueue.enqueue(end_node_->getLeft());
-		while (!srcQueue.empty())
+		while (src && !srcQueue.empty())
 		{
 			src = srcQueue.dequeue();
 			dest = destQueue.dequeue();
@@ -167,7 +167,6 @@ public:
 	node_size_type getOrder(const value_type& value) const
 	{
 		return getOrder(end_node_->getLeft(), value);
-		// return getOrder(end_node_, value);
 	}
 
 	BalanceNode* OS_Select(BalanceNode* node, size_t i) const
