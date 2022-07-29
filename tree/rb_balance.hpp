@@ -119,6 +119,7 @@ public:
 		endNode->setRank(this->calculateRankFrom(endNode));
 	}
 
+#if DEBUG
 	void printNode(Node* node) const
 	{
 		std::cout << node->getValue().first << "(" << node->getRank() << ", ";
@@ -130,7 +131,7 @@ public:
 			std::cout << "DB";
 		std::cout << ")" << '-';
 	}
-
+#endif
 	void flipColor(Node* node)
 	{
 		if (isRed(node))

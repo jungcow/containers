@@ -229,31 +229,30 @@ namespace ft
 		iterator insert(iterator position, const value_type& val)
 		{
 			ft::pair<balance_node_type*, bool> result;
-			// iterator tmp = position;
 
+			// iterator tmp = position;
 			// if (position == end())
 			// 	--position;
 			// if (compare_value_(*position, val))
 			// {
 			// 	++tmp;
 			// 	if (tmp == end() || compare_value_(val, *tmp))
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	else
-			// 		data_->insert(val);
+			// 		result = data_->insert(val);
 			// }
 			// else if (compare_value_(val, *position))
 			// {
 			// 	if (position == begin())
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	if (compare_value_(*(--tmp), val))
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	else
-			// 		data_->insert(val);
+			// 		result = data_->insert(val);
 			// }
 			// else
 			// 	return position;
-			// for ()
-			iterator dummy = position;  // TODO: 지우기
+			iterator dummy = position; // position 사용 안함
 
 			result = data_->insert(val);
 			return iterator(result.first, data_);
@@ -555,17 +554,7 @@ namespace ft
 				order = tree_->size() + 1;
 			else
 				order = tree_->getOrder(*base_);
-			// std::cout << "before order: " << order << std::endl;
 			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), ++order)));
-			if (!base_.base())
-			{
-				std::cout << "base is null!?\n";
-			}
-			else if (base_.base() == reinterpret_cast<node_pointer>(tree_->getEndNode()))
-			{
-				// std::cout << "now is in End Node\n";
-			}
-			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator++(int)
@@ -582,9 +571,7 @@ namespace ft
 				order = tree_->size() + 1;
 			else
 				order = tree_->getOrder(*base_);
-			// std::cout << "before order: " << order << std::endl;
 			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), --order)));
-			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator--(int)

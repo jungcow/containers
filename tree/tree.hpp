@@ -3,8 +3,8 @@
 
 #include <iostream>
 
-#include "../utility.hpp" // ft::pair, ft::make_pair
-#include "queue.hpp" // 
+#include "../utility.hpp"  // ft::pair, ft::make_pair
+#include "queue.hpp"       //
 
 namespace ft
 {
@@ -198,13 +198,12 @@ public:
 		else
 			return OS_Select(node->getRight(), i - r);
 	}
-
+#if DEBUG
 	void printByInOrderTraversal() const
 	{
 		printByInOrderTraversal(end_node_->getLeft());
 		std::cout << "\n";
 	}
-
 	bool isFollowedAllRules() const
 	{
 		bool result = true;
@@ -214,6 +213,7 @@ public:
 			checkTwoRedNodesContinuously(end_node_->getLeft(), &result);
 		return result;
 	}
+#endif
 
 private:
 	node_size_type getOrder(BalanceNode* node, const value_type& value) const
@@ -221,6 +221,7 @@ private:
 		return Node().getOrder(node, value);
 	}
 
+#if DEBUG
 	void printByInOrderTraversal(BalanceNode* node) const
 	{
 		if (node == NULL)
@@ -231,7 +232,6 @@ private:
 
 		printByInOrderTraversal(node->getRight());
 	}
-
 	int checkBlackNodeCount(BalanceNode* node, bool* result) const
 	{
 		int l, r;
@@ -255,6 +255,7 @@ private:
 		if (node->getColor() == BalanceNode::Red && node->getRight()->getColor() == BalanceNode::Red)
 			*result = false;
 	}
+#endif
 
 	BalanceNode* createNode(const value_type& value = value_type())
 	{
