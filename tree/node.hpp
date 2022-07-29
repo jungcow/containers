@@ -160,7 +160,6 @@ public:
 	{
 		if (node == NULL)
 		{
-			// std::cout << "\n\nNot Found!!\n\n"; // TODO: 주석 지우기
 			*arrived = parent;
 			return NULL;
 		}
@@ -173,9 +172,9 @@ public:
 		return node;
 	}
 
-	BalanceNode* insert(BalanceNode* node, const value_type& value, bool& inserted)
+	BalanceNode* insert(BalanceNode* node, const value_type& value, BalanceNode** insertedNode, bool& inserted)
 	{
-		return static_cast<BalanceNode&>(*this).insert(node, value, inserted);
+		return static_cast<BalanceNode&>(*this).insert(node, value, insertedNode, inserted);
 	}
 
 	BalanceNode* erase(BalanceNode* node, const value_type& value, BalanceNode* parent, bool& erased)
@@ -218,9 +217,9 @@ public:
 		return static_cast<BalanceNode&>(*this).deleteAllNodes(node);
 	}
 
-	void setRootNode(BalanceNode* node)
+	void setEndNode(BalanceNode* node)
 	{
-		return static_cast<BalanceNode&>(*this).setRootNode(node);
+		return static_cast<BalanceNode&>(*this).setEndNode(node);
 	}
 
 	void printNode(BalanceNode* node) const
@@ -240,7 +239,7 @@ public:
 			rRank = node->getRight()->getRank();
 		return (lRank + rRank + 1);
 	}
-
+#if 0
 	BalanceNode* calculateAllNodesRank(BalanceNode* node)
 	{
 		if (!node->getLeft() && !node->getRight())
@@ -259,7 +258,7 @@ public:
 		node->setRank(lRank + rRank + 1);
 		return (node);
 	}
-
+#endif
 	bool compareValue(const value_type& lhs, const value_type& rhs) const
 	{
 		return base::compareValue(lhs, rhs);
@@ -287,6 +286,7 @@ public:
 	typedef typename node_iterator_type::reference node_reference;
 	typedef typename node_iterator_type::difference_type node_difference_type;
 	typedef typename node_iterator_type::iterator_category node_iterator_category;
+	typedef typename node_value_type::node_size_type node_size_type;
 
 private:
 	Iterator base_;  // same with BalanceNode*
@@ -316,10 +316,6 @@ public:
 
 	~node_iterator() {}
 
-	Iterator base(void)
-	{
-		return base_;
-	}
 	Iterator base(void) const
 	{
 		return base_;
@@ -329,21 +325,13 @@ public:
 	{
 		return (base_->getValue());
 	}
-	reference operator*()
-	{
-		return (base_->getValue());
-	}
 
 	pointer operator->() const
 	{
 		return &(base_->getValue());
 	}
-	pointer operator->()
-	{
-		return &(base_->getValue());
-	}
 
-	size_t rank() const
+	node_size_type rank() const
 	{
 		return base_->getRank();
 	}

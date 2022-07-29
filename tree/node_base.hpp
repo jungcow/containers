@@ -81,7 +81,7 @@ public:
 		val_ = value;
 	}
 
-	bool compareValue(const value_type& lhs, const value_type& rhs) const
+	bool compareValue(const_reference lhs, const_reference rhs) const
 	{
 		return compare_value_(lhs, rhs);
 	}

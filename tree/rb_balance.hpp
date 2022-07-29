@@ -4,7 +4,7 @@
 #include "node_wrapper.hpp"
 
 template <class N>
-class ft::NodeWrapper<N>::RBBalance : public TNode<RBBalance>::type
+class ft::node::NodeWrapper<N>::RBBalance : public ft::node::NodeWrapper<N>::TNode<RBBalance>::type
 {
 private:
 	typedef RBBalance Node;
@@ -20,8 +20,8 @@ public:
 	/**
 	 * Base Type
 	 */
-	typedef typename TNode<RBBalance>::type base_node;
-	typedef typename base_node::allocator_type allocator_type;
+	typedef typename TNode<RBBalance>::type default_node;
+	typedef typename default_node::allocator_type allocator_type;
 
 	typedef typename allocator_type::value_type value_type;
 	typedef typename allocator_type::pointer pointer;
@@ -35,7 +35,7 @@ public:
 	/**
 	 * RB Node Type
 	 */
-	typedef typename base_node::node_allocator_type node_allocator_type;
+	typedef typename default_node::node_allocator_type node_allocator_type;
 	typedef typename node_allocator_type::value_type node_value_type;
 	typedef typename node_allocator_type::pointer node_pointer;
 	typedef typename node_allocator_type::reference node_reference;
@@ -52,7 +52,7 @@ private:
 
 public:
 	RBBalance()
-		: base_node(),
+		: default_node(),
 		  color_(Red),
 		  Nil_(false),
 		  rb_node_allocator_(node_allocator_type())
@@ -60,7 +60,7 @@ public:
 	}
 
 	RBBalance(const value_type& value, const Color& color = Red)
-		: base_node(value),
+		: default_node(value),
 		  color_(color),
 		  Nil_(false),
 		  rb_node_allocator_(node_allocator_type())
@@ -68,7 +68,7 @@ public:
 	}
 
 	RBBalance(const RBBalance& other)
-		: base_node(other),
+		: default_node(other),
 		  color_(other.getColor()),
 		  Nil_(other.getNil()),
 		  rb_node_allocator_(node_allocator_type())
@@ -106,7 +106,7 @@ public:
 		Nil_ = nil;
 	}
 
-	void setRootNode(Node* endNode)
+	void setEndNode(Node* endNode)
 	{
 		if (!endNode || !endNode->getLeft())
 			return;
@@ -183,20 +183,23 @@ public:
 		return true;
 	}
 
-	Node* insert(Node* node, const value_type& value, bool& inserted)
+	Node* insert(Node* node, const value_type& value, BalanceNode** insertedNode, bool& inserted)
 	{
 		if (node == NULL)
 		{
 			inserted = true;
-			return (createNode(value));
+			*insertedNode = createNode(value);
+			return *insertedNode;
 		}
 
 		if (isRed(node->getLeft()) && isRed(node->getRight()))
 			splitNode(node);
 		if (this->compareValue(node->getValue(), value))
-			node->setRight(insert(node->getRight(), value, inserted));
+			node->setRight(insert(node->getRight(), value, insertedNode, inserted));
 		else if (this->compareValue(value, node->getValue()))
-			node->setLeft(insert(node->getLeft(), value, inserted));
+			node->setLeft(insert(node->getLeft(), value, insertedNode, inserted));
+		else
+			*insertedNode = node;
 		node->setRank(this->calculateRankFrom(node));
 		return balance(node);
 	}

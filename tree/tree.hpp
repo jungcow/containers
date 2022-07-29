@@ -137,26 +137,28 @@ public:
 		return ft::make_pair(foundNode, arrivedNode);
 	}
 
-	bool insert(const value_type& value)
+	ft::pair<BalanceNode*, bool> insert(const value_type& value)
 	{
+		BalanceNode* insertedNode;
 		bool inserted = false;
 
-		end_node_->setLeft(Node().insert(end_node_->getLeft(), value, inserted));
+		end_node_->setLeft(Node().insert(end_node_->getLeft(), value, &insertedNode, inserted));
 		if (inserted)
 			size_++;
-		setRootNode(end_node_);
-		return (inserted);
+		setEndNode(end_node_);
+		return (ft::make_pair(insertedNode, inserted));
 	}
 
-	bool insert(BalanceNode* node, const value_type& value)
+	ft::pair<BalanceNode*, bool> insert(BalanceNode* node, const value_type& value)
 	{
+		BalanceNode* insertedNode;
 		bool inserted = false;
 
-		end_node_->setLeft(Node().insert(node, value, inserted));
+		end_node_->setLeft(Node().insert(node, value, &insertedNode, inserted));
 		if (inserted)
 			size_++;
-		setRootNode(end_node_);
-		return (inserted);
+		setEndNode(end_node_);
+		return (ft::make_pair(insertedNode, inserted));
 	}
 
 	bool erase(const value_type& value)
@@ -168,7 +170,7 @@ public:
 		end_node_->setLeft(Node().erase(end_node_->getLeft(), value, end_node_, erased));
 		if (erased)
 			size_--;
-		setRootNode(end_node_);
+		setEndNode(end_node_);
 		return (erased);
 	}
 
@@ -273,9 +275,9 @@ private:
 		return Node().deleteAllNodes(node);
 	}
 
-	void setRootNode(BalanceNode* node)
+	void setEndNode(BalanceNode* node)
 	{
-		Node().setRootNode(node);
+		Node().setEndNode(node);
 	}
 
 	void printNode(BalanceNode* node) const

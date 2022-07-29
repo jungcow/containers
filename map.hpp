@@ -55,15 +55,15 @@ namespace ft
 		typedef ft::node::NodeBase<pointer, pointer, value_compare, allocator_type> node_base;
 		typedef ft::node::NodeBase<const_pointer, pointer, value_compare, allocator_type> const_node_base;
 
-		typedef typename ft::NodeWrapper<node_base>::RBNode node_type;
-		typedef typename ft::NodeWrapper<const_node_base>::RBNode const_node_type;
+		typedef typename ft::node::NodeWrapper<node_base>::RBNode node_type;
+		typedef typename ft::node::NodeWrapper<const_node_base>::RBNode const_node_type;
 
-		typedef typename ft::NodeWrapper<node_base>::node_allocator_type node_allocator_type;
-		typedef typename ft::NodeWrapper<node_base>::node_size_type node_size_type;
-		typedef typename ft::NodeWrapper<node_base>::node_value_type node_value_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_allocator_type node_allocator_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_size_type node_size_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_value_type node_value_type;
 
-		typedef typename ft::NodeWrapper<node_base>::BalanceNode balance_node_type;
-		typedef typename ft::NodeWrapper<const_node_base>::BalanceNode const_balance_node_type;
+		typedef typename ft::node::NodeWrapper<node_base>::BalanceNode balance_node_type;
+		typedef typename ft::node::NodeWrapper<const_node_base>::BalanceNode const_balance_node_type;
 
 		typedef ft::Tree<node_type> map_tree;
 		typedef typename node_allocator_type::template rebind<map_tree>::other tree_allocator_type;
@@ -223,15 +223,15 @@ namespace ft
 
 		ft::pair<iterator, bool> insert(const value_type& val)
 		{
-			bool inserted;
+			ft::pair<balance_node_type*, bool> result;
 
-			inserted = data_->insert(val);
-			return ft::pair<iterator, bool>(iterator(data_->find(val).first, data_), inserted);
+			result = data_->insert(val);
+			return ft::pair<iterator, bool>(iterator(result.first, data_), result.second);
 		}
 
 		iterator insert(iterator position, const value_type& val)
 		{
-			balance_node_type* node;
+			ft::pair<balance_node_type*, bool> result;
 			// iterator tmp = position;
 
 			// if (position == end())
@@ -256,13 +256,10 @@ namespace ft
 			// else
 			// 	return position;
 			// for ()
-			data_->insert(val);
-			// std::cout << "&&&&&&&&&&&&&&& is Tree Right? &&&&&&&&&&&&&&&&&&&&&&&&\n";
-			// std::cout << data_->isFollowedAllRules() << std::endl;
-			node = data_->find(val).first;
-			if (!node)
-				return end();
-			return iterator(node, data_);
+			iterator dummy = position;  // TODO: 지우기
+
+			result = data_->insert(val);
+			return iterator(result.first, data_);
 		}
 
 		template <class InputIterator>
@@ -302,7 +299,7 @@ namespace ft
 
 		mapped_type& operator[](const key_type& k)
 		{
-			return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
+			return (*((this->insert(ft::make_pair(k, mapped_type()))).first)).second;
 		}
 
 		reverse_iterator rbegin()
