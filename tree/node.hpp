@@ -1,9 +1,8 @@
 #ifndef __FT_NODE_H__
 #define __FT_NODE_H__
 
-#include "../iterator.hpp"
-#include "../type_traits.hpp"
-#include "node_wrapper.hpp"
+#include "../iterator.hpp" // ft::iterator
+#include "../type_traits.hpp" // ft::remove_pointer
 
 namespace ft
 {

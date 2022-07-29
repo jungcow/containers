@@ -1,10 +1,6 @@
 #ifndef __FT_NODE_BASE_H__
 #define __FT_NODE_BASE_H__
 
-#include "../iterator.hpp"
-#include "../type_traits.hpp"
-#include "node_wrapper.hpp"
-
 namespace ft
 {
 	namespace node

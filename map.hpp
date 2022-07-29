@@ -1,16 +1,13 @@
 #ifndef __FT_MAP_H__
 #define __FT_MAP_H__
 
-#include <climits>     // ptrdiff_max TODO: 확인하기
-#include <cstddef>     // ptrdiff_t
+#include <climits>     // ptrdiff_max
 #include <functional>  // std::less, std::binary_function
 
+#include "__tree__.hpp"
 #include "algorithm.hpp"  // ft::equal, ft::lexicographical_compare
 #include "iterator.hpp"   // ft::reverse_iterator
-#include "tree/node_base.hpp"
-#include "tree/node_wrapper.hpp"
-#include "tree/tree.hpp"
-#include "utility.hpp"  // ft::pair
+#include "utility.hpp"    // ft::pair
 
 namespace ft
 {
@@ -383,11 +380,13 @@ namespace ft
 		template <class K, class V, class Comp, class A>
 		friend void swap(map<Key, T, Compare, Alloc>& x, map<K, V, Comp, A>& y);
 
-	public:  // TODO: 지우기
+#if DEBUG
+	public:
 		void print() const
 		{
 			data_->printByInOrderTraversal();
 		}
+#endif
 	};
 
 	template <class K, class V, class Comp, class A>

@@ -1,7 +1,7 @@
 #ifndef __FT_RB_BALANCE_H__
 #define __FT_RB_BALANCE_H__
 
-#include "node_wrapper.hpp"
+#include "node_wrapper.hpp"  // ft::node::NodeWrapper<N>::RBBalance
 
 template <class N>
 class ft::node::NodeWrapper<N>::RBBalance : public ft::node::NodeWrapper<N>::TNode<RBBalance>::type
@@ -618,7 +618,6 @@ private:
 				parent->setLeft(deleteNode(node));
 			else
 				parent->setRight(deleteNode(node));
-			// deleteNode(node); // TODO: comment 지우기
 		}
 		return parent;
 	}
@@ -634,7 +633,6 @@ private:
 				parent->setLeft(deleteNode(node));
 			else
 				parent->setRight(deleteNode(node));
-			// deleteNode(node);
 			parent->setRank(this->calculateRankFrom(parent));
 		}
 		return parent;
@@ -676,7 +674,6 @@ private:
 				parent->setLeft(deleteNode(node));
 			else
 				parent->setRight(deleteNode(node));
-			// deleteNode(node);
 			parent->setRank(this->calculateRankFrom(parent));
 		}
 		grandParent->setRank(this->calculateRankFrom(grandParent));

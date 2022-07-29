@@ -1,7 +1,7 @@
 #ifndef __FT_TREE_H__
 #define __FT_TREE_H__
 
-#include "node.hpp"
+#include "node.hpp" // ft::node::Node
 
 namespace ft
 {
