@@ -9,45 +9,45 @@ namespace ft
 	template <class T, class Container = ft::vector<T> >
 	class stack
 	{
-	private:
+	public:
 		typedef T value_type;
 		typedef Container container_type;
 		typedef typename container_type::size_type size_type;
 
-	private:
-		container_type base_;
+	protected:
+		container_type c;
 
 	public:
 		explicit stack(const container_type& cntr = container_type())
-			: base_(cntr) {}
+			: c(cntr) {}
 
 		bool empty() const
 		{
-			return (base_.empty());
+			return (c.empty());
 		}
 
 		void pop()
 		{
-			return (base_.pop_back());
+			return (c.pop_back());
 		}
 
 		void push(const value_type& val)
 		{
-			return (base_.push_back(val));
+			return (c.push_back(val));
 		}
 
 		size_type size() const
 		{
-			return (base_.size());
+			return (c.size());
 		}
 
 		value_type& top()
 		{
-			return (base_.back());
+			return (c.back());
 		}
 		const value_type& top() const
 		{
-			return (base_.back());
+			return (c.back());
 		}
 
 		template <class U, class Cont>
@@ -66,7 +66,7 @@ namespace ft
 	template <class U, class Cont>
 	bool operator==(const stack<U, Cont>& lhs, const stack<U, Cont>& rhs)
 	{
-		return (lhs.base_ == rhs.base_);
+		return (lhs.c == rhs.c);
 	}
 	template <class U, class Cont>
 	bool operator!=(const stack<U, Cont>& lhs, const stack<U, Cont>& rhs)
@@ -76,7 +76,7 @@ namespace ft
 	template <class U, class Cont>
 	bool operator<(const stack<U, Cont>& lhs, const stack<U, Cont>& rhs)
 	{
-		return (lhs.base_ < rhs.base_);
+		return (lhs.c < rhs.c);
 	}
 	template <class U, class Cont>
 	bool operator<=(const stack<U, Cont>& lhs, const stack<U, Cont>& rhs)
