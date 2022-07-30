@@ -42,7 +42,7 @@ private:
 	compare_type compare_value_;
 
 public:
-	NodeBase()
+	NodeBase() : val_(value_type()), compare_value_(compare_type())
 	{
 	}
 
