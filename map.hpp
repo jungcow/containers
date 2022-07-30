@@ -1,16 +1,13 @@
 #ifndef __FT_MAP_H__
 #define __FT_MAP_H__
 
-#include <climits>     // ptrdiff_max TODO: 확인하기
-#include <cstddef>     // ptrdiff_t
+#include <climits>     // ptrdiff_max
 #include <functional>  // std::less, std::binary_function
 
+#include "__tree__.hpp"
 #include "algorithm.hpp"  // ft::equal, ft::lexicographical_compare
 #include "iterator.hpp"   // ft::reverse_iterator
-#include "tree/node_base.hpp"
-#include "tree/node_wrapper.hpp"
-#include "tree/tree.hpp"
-#include "utility.hpp"  // ft::pair
+#include "utility.hpp"    // ft::pair
 
 namespace ft
 {
@@ -39,8 +36,6 @@ namespace ft
 
 		typedef Alloc allocator_type;
 
-		typedef typename allocator_type::size_type size_type;
-		typedef typename allocator_type::difference_type difference_type;
 
 		typedef typename allocator_type::value_type value_type;
 		typedef typename allocator_type::pointer pointer;
@@ -55,15 +50,15 @@ namespace ft
 		typedef ft::node::NodeBase<pointer, pointer, value_compare, allocator_type> node_base;
 		typedef ft::node::NodeBase<const_pointer, pointer, value_compare, allocator_type> const_node_base;
 
-		typedef typename ft::NodeWrapper<node_base>::RBNode node_type;
-		typedef typename ft::NodeWrapper<const_node_base>::RBNode const_node_type;
+		typedef typename ft::node::NodeWrapper<node_base>::RBNode node_type;
+		typedef typename ft::node::NodeWrapper<const_node_base>::RBNode const_node_type;
 
-		typedef typename ft::NodeWrapper<node_base>::node_allocator_type node_allocator_type;
-		typedef typename ft::NodeWrapper<node_base>::node_size_type node_size_type;
-		typedef typename ft::NodeWrapper<node_base>::node_value_type node_value_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_allocator_type node_allocator_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_size_type node_size_type;
+		typedef typename ft::node::NodeWrapper<node_base>::node_value_type node_value_type;
 
-		typedef typename ft::NodeWrapper<node_base>::BalanceNode balance_node_type;
-		typedef typename ft::NodeWrapper<const_node_base>::BalanceNode const_balance_node_type;
+		typedef typename ft::node::NodeWrapper<node_base>::BalanceNode balance_node_type;
+		typedef typename ft::node::NodeWrapper<const_node_base>::BalanceNode const_balance_node_type;
 
 		typedef ft::Tree<node_type> map_tree;
 		typedef typename node_allocator_type::template rebind<map_tree>::other tree_allocator_type;
@@ -80,6 +75,9 @@ namespace ft
 
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
+		
+		typedef typename allocator_type::size_type size_type;
+		typedef typename ft::iterator_traits<iterator>::difference_type difference_type;
 
 	private:
 		map_tree* data_;
@@ -223,46 +221,43 @@ namespace ft
 
 		ft::pair<iterator, bool> insert(const value_type& val)
 		{
-			bool inserted;
+			ft::pair<balance_node_type*, bool> result;
 
-			inserted = data_->insert(val);
-			return ft::pair<iterator, bool>(iterator(data_->find(val).first, data_), inserted);
+			result = data_->insert(val);
+			return ft::pair<iterator, bool>(iterator(result.first, data_), result.second);
 		}
 
 		iterator insert(iterator position, const value_type& val)
 		{
-			balance_node_type* node;
-			// iterator tmp = position;
+			ft::pair<balance_node_type*, bool> result;
 
+			//TODO: hint 최적화
+			// iterator tmp = position;
 			// if (position == end())
 			// 	--position;
 			// if (compare_value_(*position, val))
 			// {
 			// 	++tmp;
 			// 	if (tmp == end() || compare_value_(val, *tmp))
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	else
-			// 		data_->insert(val);
+			// 		result = data_->insert(val);
 			// }
 			// else if (compare_value_(val, *position))
 			// {
 			// 	if (position == begin())
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	if (compare_value_(*(--tmp), val))
-			// 		data_->insert(position.base().base(), val);
+			// 		result = data_->insert(position.base().base(), val);
 			// 	else
-			// 		data_->insert(val);
+			// 		result = data_->insert(val);
 			// }
 			// else
 			// 	return position;
-			// for ()
-			data_->insert(val);
-			// std::cout << "&&&&&&&&&&&&&&& is Tree Right? &&&&&&&&&&&&&&&&&&&&&&&&\n";
-			// std::cout << data_->isFollowedAllRules() << std::endl;
-			node = data_->find(val).first;
-			if (!node)
-				return end();
-			return iterator(node, data_);
+			iterator dummy = position; // position 사용 안함
+
+			result = data_->insert(val);
+			return iterator(result.first, data_);
 		}
 
 		template <class InputIterator>
@@ -302,7 +297,7 @@ namespace ft
 
 		mapped_type& operator[](const key_type& k)
 		{
-			return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
+			return (*((this->insert(ft::make_pair(k, mapped_type()))).first)).second;
 		}
 
 		reverse_iterator rbegin()
@@ -386,11 +381,13 @@ namespace ft
 		template <class K, class V, class Comp, class A>
 		friend void swap(map<Key, T, Compare, Alloc>& x, map<K, V, Comp, A>& y);
 
-	public:  // TODO: 지우기
+#if DEBUG
+	public:
 		void print() const
 		{
 			data_->printByInOrderTraversal();
 		}
+#endif
 	};
 
 	template <class K, class V, class Comp, class A>
@@ -559,17 +556,7 @@ namespace ft
 				order = tree_->size() + 1;
 			else
 				order = tree_->getOrder(*base_);
-			// std::cout << "before order: " << order << std::endl;
 			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), ++order)));
-			if (!base_.base())
-			{
-				std::cout << "base is null!?\n";
-			}
-			else if (base_.base() == reinterpret_cast<node_pointer>(tree_->getEndNode()))
-			{
-				// std::cout << "now is in End Node\n";
-			}
-			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator++(int)
@@ -586,9 +573,7 @@ namespace ft
 				order = tree_->size() + 1;
 			else
 				order = tree_->getOrder(*base_);
-			// std::cout << "before order: " << order << std::endl;
 			base_ = Iterator(reinterpret_cast<node_pointer>(tree_->OS_Select(tree_->getEndNode(), --order)));
-			// std::cout << "after order: " << order << std::endl;
 			return (*this);
 		}
 		map_iterator operator--(int)

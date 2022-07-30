@@ -1,10 +1,6 @@
 #ifndef __FT_NODE_BASE_H__
 #define __FT_NODE_BASE_H__
 
-#include "../iterator.hpp"
-#include "../type_traits.hpp"
-#include "node_wrapper.hpp"
-
 namespace ft
 {
 	namespace node
@@ -46,7 +42,7 @@ private:
 	compare_type compare_value_;
 
 public:
-	NodeBase()
+	NodeBase() : val_(value_type()), compare_value_(compare_type())
 	{
 	}
 
@@ -81,7 +77,7 @@ public:
 		val_ = value;
 	}
 
-	bool compareValue(const value_type& lhs, const value_type& rhs) const
+	bool compareValue(const_reference lhs, const_reference rhs) const
 	{
 		return compare_value_(lhs, rhs);
 	}
