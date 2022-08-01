@@ -100,6 +100,7 @@ namespace ft
 		{
 			clear();
 			allocator_.deallocate(data_, capacity_);
+			data_ = NULL;
 			size_ = 0;
 			capacity_ = 0;
 		}
@@ -236,11 +237,10 @@ namespace ft
 
 		iterator insert(iterator position, const value_type& val)
 		{
-			size_type pos = getOffsetFromEndTo(position);
+			size_type pos = end() - position;
 
 			if (size_ + 1 >= capacity_)
 				reserve(capacity_ * 2);
-			constructRange(size_, size_ + 1);
 			moveBackByInterval(end(), end() - pos, 1);
 			constructRange(size_ - pos, size_ - pos + 1, val);
 			size_++;
@@ -249,11 +249,10 @@ namespace ft
 
 		void insert(iterator position, size_type n, const value_type& val)
 		{
-			size_type pos = getOffsetFromEndTo(position);
+			size_type pos = end() - position;
 
 			if (size_ + n + 1 >= capacity_)
 				reserve(std::max((size_ + n + 1), (2 * capacity_)));
-			constructRange(size_, size_ + n);
 			moveBackByInterval(end() + n - 1, end() - pos, n);
 			constructRange(size_ - pos, size_ - pos + n, val);
 			size_ += n;
@@ -281,15 +280,25 @@ namespace ft
 				*this = tmp;
 				return;
 			}
-			size_type pos = getOffsetFromEndTo(position);
+			size_type pos = end() - position;
 			size_type n = ft::distance(first, last);
 
 			if (size_ + n >= capacity_)
 				reserve(std::max((size_ + n + 1), (2 * capacity_)));
-			constructRange(size_, size_ + 1);
 			moveBackByInterval(end() + n - 1, end() - pos, n);
 			for (size_type i = 0; i < n; i++)
-				allocator_.construct(&data_[size_ - pos + i], *first++);
+			{
+				try
+				{
+					allocator_.construct(&data_[size_ - pos + i], *first++);
+				}
+				catch (...)
+				{
+					for (size_type k = 0; k < i; k++)
+						allocator_.destroy(&data_[k]);
+					throw std::exception();
+				}
+			}
 			size_ += n;
 		}
 
@@ -396,9 +405,8 @@ namespace ft
 				throw std::length_error("resize");
 			if (size_ > n)
 			{
-				if (!ft::is_trivial_destructible_junior<value_type>::value)
-					for (size_type i = n; i < size_; i++)
-						allocator_.destroy(&data_[i]);
+				for (size_type i = n; i < size_; i++)
+					allocator_.destroy(&data_[i]);
 			}
 			else if (size_ < n && n < capacity_)
 			{
@@ -529,12 +537,6 @@ namespace ft
 		typedef typename vector_iterator::reference reference;
 		typedef typename vector_iterator::difference_type difference_type;
 		typedef typename vector_iterator::iterator_category iterator_category;
-		// typedef ft::iterator<std::random_access_iterator_tag, typename ft::remove_pointer<Iterator>::type> iterType;
-		// typedef typename iterType::value_type value_type;
-		// typedef typename iterType::pointer pointer;
-		// typedef typename iterType::reference reference;
-		// typedef typename iterType::difference_type difference_type;
-		// typedef typename iterType::iterator_category iterator_category;
 
 	private:
 		Iterator base_;
