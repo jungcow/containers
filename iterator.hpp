@@ -163,7 +163,7 @@ namespace ft
 		{
 			iterator_type tmp = base_;
 
-			return *(--tmp); // bidirectional iterator는 base - 1을 지원하지 않음. 따라서 base - 1 대신 --tmp로 사용
+			return *(--tmp);  // bidirectional iterator는 base - 1을 지원하지 않음. 따라서 base - 1 대신 --tmp로 사용
 		}
 
 		reverse_iterator operator+(typename reverse_iterator::difference_type n) const
@@ -368,16 +368,30 @@ namespace ft
 
 	template <class ForwardIterator>
 	typename iterator_traits<ForwardIterator>::difference_type
-	distance(ForwardIterator first, ForwardIterator last)
+	distance(typename ft::enable_if<
+				 ft::is_same<typename ft::iterator_traits<ForwardIterator>::iterator_category, std::forward_iterator_tag>::value ||
+					 ft::is_same<typename ft::iterator_traits<ForwardIterator>::iterator_category, std::bidirectional_iterator_tag>::value,
+				 ForwardIterator>::type first,
+			 ForwardIterator last)
 	{
 		typename iterator_traits<ForwardIterator>::difference_type diff = 0;
-		if (ft::is_same<std::random_access_iterator_tag, typename ft::iterator_traits<ForwardIterator>::iterator_category>::value)
-			diff = last - first;
-		else
-		{
-			for (; first != last; first++)
-				diff++;
-		}
+
+		for (; first != last; first++)
+			diff++;
+		return diff;
+	}
+
+	template <class RandomAccessIterator>
+	typename iterator_traits<RandomAccessIterator>::difference_type
+	distance(typename ft::enable_if<
+				 ft::is_same<typename ft::iterator_traits<RandomAccessIterator>::iterator_category,
+							 std::random_access_iterator_tag>::value,
+				 RandomAccessIterator>::type first,
+			 RandomAccessIterator last)
+	{
+		typename iterator_traits<RandomAccessIterator>::difference_type diff = 0;
+
+		diff = last - first;
 		return diff;
 	}
 }

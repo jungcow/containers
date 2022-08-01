@@ -13,7 +13,7 @@
 
 namespace ft
 {
-	template <class Iter, class Pointer>
+	template <class Iterator>
 	class vector_iterator;
 
 	template <typename T, class Alloc = std::allocator<T> >
@@ -32,8 +32,8 @@ namespace ft
 		typedef value_type* pointer;
 		typedef const value_type* const_pointer;
 
-		typedef ft::vector_iterator<pointer, pointer> iterator;
-		typedef ft::vector_iterator<const_pointer, pointer> const_iterator;
+		typedef ft::vector_iterator<pointer> iterator;
+		typedef ft::vector_iterator<const_pointer> const_iterator;
 
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
@@ -173,7 +173,7 @@ namespace ft
 
 		size_type capacity() const
 		{
-			return (capacity_ - 1);
+			return (capacity_);
 		}
 
 		void clear()
@@ -520,16 +520,21 @@ namespace ft
 		x.swap(y);
 	}
 
-	template <class Iterator, class Pointer>
-	class vector_iterator
+	template <class Iterator>
+	class vector_iterator : public ft::iterator_traits<Iterator>
 	{
 	public:
-		typedef ft::iterator<std::random_access_iterator_tag, typename ft::remove_pointer<Iterator>::type> iterType;
-		typedef typename iterType::value_type value_type;
-		typedef typename iterType::pointer pointer;
-		typedef typename iterType::reference reference;
-		typedef typename iterType::difference_type difference_type;
-		typedef typename iterType::iterator_category iterator_category;
+		typedef typename vector_iterator::value_type value_type;
+		typedef typename vector_iterator::pointer pointer;
+		typedef typename vector_iterator::reference reference;
+		typedef typename vector_iterator::difference_type difference_type;
+		typedef typename vector_iterator::iterator_category iterator_category;
+		// typedef ft::iterator<std::random_access_iterator_tag, typename ft::remove_pointer<Iterator>::type> iterType;
+		// typedef typename iterType::value_type value_type;
+		// typedef typename iterType::pointer pointer;
+		// typedef typename iterType::reference reference;
+		// typedef typename iterType::difference_type difference_type;
+		// typedef typename iterType::iterator_category iterator_category;
 
 	private:
 		Iterator base_;
@@ -548,10 +553,8 @@ namespace ft
 		 * const_iterator = iterator의 과정은 다음과 같다. -> is_same<int *, int*>
 		 * iterator = const_iterator의 과정은 다음과 같다. -> is_same<const int*, int*>
 		 */
-		template <class P /*pointer를 받는다. */>
-		vector_iterator(const vector_iterator<P, typename ft::enable_if<
-													 ft::is_same<P, Pointer>::value,
-													 Pointer>::type>& other)
+		// template <class P /*pointer를 받는다. */>
+		vector_iterator(const vector_iterator<value_type*>& other)
 			: base_(other.base())
 		{
 		}
@@ -654,38 +657,102 @@ namespace ft
 		/**
 		 * 두 iterator가 같다 => 두 iterator 값이 동일한 sequence를 반복한다(순회한다)
 		 */
-		bool operator==(const vector_iterator& other) const
-		{
-			return (base_ == other.base_);
-		}
-		bool operator!=(const vector_iterator& other) const
-		{
-			return !(base_ == other.base_);
-		}
 
-		bool operator<(const vector_iterator& other) const
-		{
-			return (base_ < other.base());
-		}
-		bool operator>(const vector_iterator& other) const
-		{
-			return (base_ > other.base());
-		}
-		bool operator<=(const vector_iterator& other) const
-		{
-			return (base_ <= other.base());
-		}
-		bool operator>=(const vector_iterator& other) const
-		{
-			return (base_ >= other.base());
-		}
+		template <class Iter>
+		friend bool operator==(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
+		template <class Iter>
+		friend bool operator!=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
+		template <class Iter>
+		friend bool operator<(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
+		template <class Iter>
+		friend bool operator<=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
+		template <class Iter>
+		friend bool operator>(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
+		template <class Iter>
+		friend bool operator>=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs);
 
-		template <class Iter, class P>
-		friend vector_iterator<Iter, P> operator+(int n, const vector_iterator<Iter, P>& other);
+		template <class Iter1, class Iter2>
+		friend bool operator==(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+		template <class Iter1, class Iter2>
+		friend bool operator!=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+		template <class Iter1, class Iter2>
+		friend bool operator<(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+		template <class Iter1, class Iter2>
+		friend bool operator<=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+		template <class Iter1, class Iter2>
+		friend bool operator>(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+		template <class Iter1, class Iter2>
+		friend bool operator>=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs);
+
+		template <class Iter>
+		friend vector_iterator<Iter> operator+(int n, const vector_iterator<Iter>& other);
 	};
+	template <class Iter>
+	bool operator==(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return (lhs.base() == rhs.base());
+	}
+	template <class Iter>
+	bool operator!=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return !(lhs == rhs);
+	}
 
-	template <class Iter, class P>
-	vector_iterator<Iter, P> operator+(int n, const vector_iterator<Iter, P>& other)
+	template <class Iter>
+	bool operator<(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return (lhs.base() < rhs.base());
+	}
+	template <class Iter>
+	bool operator<=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return !(rhs < lhs);
+	}
+	template <class Iter>
+	bool operator>(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return (rhs < lhs);
+	}
+	template <class Iter>
+	bool operator>=(const vector_iterator<Iter>& lhs, const vector_iterator<Iter>& rhs)
+	{
+		return !(lhs < rhs);
+	}
+
+	template <class Iter1, class Iter2>
+	bool operator==(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return (lhs.base() == rhs.base());
+	}
+	template <class Iter1, class Iter2>
+	bool operator!=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return !(lhs == rhs);
+	}
+
+	template <class Iter1, class Iter2>
+	bool operator<(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return (lhs.base() < rhs.base());
+	}
+	template <class Iter1, class Iter2>
+	bool operator<=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return !(rhs < lhs);
+	}
+	template <class Iter1, class Iter2>
+	bool operator>(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return (rhs < lhs);
+	}
+	template <class Iter1, class Iter2>
+	bool operator>=(const vector_iterator<Iter1>& lhs, const vector_iterator<Iter2>& rhs)
+	{
+		return !(lhs < rhs);
+	}
+
+	template <class Iter>
+	vector_iterator<Iter> operator+(int n, const vector_iterator<Iter>& other)
 	{
 		return (other + n);
 	}
