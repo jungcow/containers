@@ -36,7 +36,6 @@ namespace ft
 
 		typedef Alloc allocator_type;
 
-
 		typedef typename allocator_type::value_type value_type;
 		typedef typename allocator_type::pointer pointer;
 		typedef typename allocator_type::reference reference;
@@ -75,7 +74,7 @@ namespace ft
 
 		typedef ft::reverse_iterator<iterator> reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator> const_reverse_iterator;
-		
+
 		typedef typename allocator_type::size_type size_type;
 		typedef typename ft::iterator_traits<iterator>::difference_type difference_type;
 
@@ -231,30 +230,30 @@ namespace ft
 		{
 			ft::pair<balance_node_type*, bool> result;
 
-			//TODO: hint 최적화
-			// iterator tmp = position;
-			// if (position == end())
-			// 	--position;
-			// if (compare_value_(*position, val))
-			// {
-			// 	++tmp;
-			// 	if (tmp == end() || compare_value_(val, *tmp))
-			// 		result = data_->insert(position.base().base(), val);
-			// 	else
-			// 		result = data_->insert(val);
-			// }
-			// else if (compare_value_(val, *position))
-			// {
-			// 	if (position == begin())
-			// 		result = data_->insert(position.base().base(), val);
-			// 	if (compare_value_(*(--tmp), val))
-			// 		result = data_->insert(position.base().base(), val);
-			// 	else
-			// 		result = data_->insert(val);
-			// }
-			// else
-			// 	return position;
-			iterator dummy = position; // position 사용 안함
+			// TODO: hint 최적화
+			//  iterator tmp = position;
+			//  if (position == end())
+			//  	--position;
+			//  if (compare_value_(*position, val))
+			//  {
+			//  	++tmp;
+			//  	if (tmp == end() || compare_value_(val, *tmp))
+			//  		result = data_->insert(position.base().base(), val);
+			//  	else
+			//  		result = data_->insert(val);
+			//  }
+			//  else if (compare_value_(val, *position))
+			//  {
+			//  	if (position == begin())
+			//  		result = data_->insert(position.base().base(), val);
+			//  	if (compare_value_(*(--tmp), val))
+			//  		result = data_->insert(position.base().base(), val);
+			//  	else
+			//  		result = data_->insert(val);
+			//  }
+			//  else
+			//  	return position;
+			iterator dummy = position;  // position 사용 안함
 
 			result = data_->insert(val);
 			return iterator(result.first, data_);
@@ -501,8 +500,9 @@ namespace ft
 		template <class Iter, class Tp, class I>
 		map_iterator(const map_iterator<
 					 Iter, Tp, I, typename ft::enable_if<ft::is_same<I, VPointer>::value, VPointer>::type>& other)
-			: base_(other.base()), tree_(other.tree())
+			: base_(other.base())
 		{
+			tree_ = reinterpret_cast<TreePointer>(other.tree());
 		}
 
 		explicit map_iterator(const Iterator& otherIter, TreePointer tree)  // node_iterator로 생성
@@ -587,6 +587,11 @@ namespace ft
 		friend bool operator==(const map_iterator<Iter, Tp, Vi, Vp>& lhs, const map_iterator<Iter, Tp, Vi, Vp>& rhs);
 		template <class Iter, class Tp, class Vi, class Vp>
 		friend bool operator!=(const map_iterator<Iter, Tp, Vi, Vp>& lhs, const map_iterator<Iter, Tp, Vi, Vp>& rhs);
+
+		template <class Iter1, class Tp1, class Vi1, class Vp1, class Iter2, class Tp2, class Vi2, class Vp2>
+		friend bool operator==(const map_iterator<Iter1, Tp1, Vi1, Vp1>& lhs, const map_iterator<Iter2, Tp2, Vi2, Vp2>& rhs);
+		template <class Iter1, class Tp1, class Vi1, class Vp1, class Iter2, class Tp2, class Vi2, class Vp2>
+		friend bool operator!=(const map_iterator<Iter1, Tp1, Vi1, Vp1>& lhs, const map_iterator<Iter2, Tp2, Vi2, Vp2>& rhs);
 	};
 	template <class Iter, class Tp, class Vi, class Vp>
 	bool operator==(const map_iterator<Iter, Tp, Vi, Vp>& lhs, const map_iterator<Iter, Tp, Vi, Vp>& rhs)
@@ -595,6 +600,16 @@ namespace ft
 	}
 	template <class Iter, class Tp, class Vi, class Vp>
 	bool operator!=(const map_iterator<Iter, Tp, Vi, Vp>& lhs, const map_iterator<Iter, Tp, Vi, Vp>& rhs)
+	{
+		return !(lhs == rhs);
+	}
+	template <class Iter1, class Tp1, class Vi1, class Vp1, class Iter2, class Tp2, class Vi2, class Vp2>
+	bool operator==(const map_iterator<Iter1, Tp1, Vi1, Vp1>& lhs, const map_iterator<Iter2, Tp2, Vi2, Vp2>& rhs)
+	{
+		return (lhs.base_ == rhs.base_);
+	}
+	template <class Iter1, class Tp1, class Vi1, class Vp1, class Iter2, class Tp2, class Vi2, class Vp2>
+	bool operator!=(const map_iterator<Iter1, Tp1, Vi1, Vp1>& lhs, const map_iterator<Iter2, Tp2, Vi2, Vp2>& rhs)
 	{
 		return !(lhs == rhs);
 	}

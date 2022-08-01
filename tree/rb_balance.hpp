@@ -1,6 +1,10 @@
 #ifndef __FT_RB_BALANCE_H__
 #define __FT_RB_BALANCE_H__
 
+#if DEBUG
+#include <iostream>
+#endif
+
 #include "node_wrapper.hpp"  // ft::node::NodeWrapper<N>::RBBalance
 
 template <class N>

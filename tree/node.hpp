@@ -1,8 +1,8 @@
 #ifndef __FT_NODE_H__
 #define __FT_NODE_H__
 
-#include "../iterator.hpp" // ft::iterator
-#include "../type_traits.hpp" // ft::remove_pointer
+#include "../iterator.hpp"     // ft::iterator
+#include "../type_traits.hpp"  // ft::remove_pointer
 
 namespace ft
 {
@@ -118,17 +118,17 @@ public:
 		order = 0;
 		while (node)
 		{
-			if (compareValue(value, node->getValue()))
-			{
-				node = node->getLeft();
-			}
-			else if (compareValue(node->getValue(), value))
+			if (compareValue(node->getValue(), value))
 			{
 				if (!node->getLeft())
 					order += 1;
 				else
 					order += node->getLeft()->getRank() + 1;
 				node = node->getRight();
+			}
+			else if (compareValue(value, node->getValue()))
+			{
+				node = node->getLeft();
 			}
 			else
 			{
@@ -344,12 +344,26 @@ public:
 	friend bool operator==(const node_iterator<I, V, Vp>& lhs, const node_iterator<I, V, Vp>& rhs);
 	template <class I, class V, class Vp>
 	friend bool operator!=(const node_iterator<I, V, Vp>& lhs, const node_iterator<I, V, Vp>& rhs);
+	template <class I1, class V1, class Vp1, class I2, class V2, class Vp2>
+	friend bool operator==(const node_iterator<I1, V1, Vp1>& lhs, const node_iterator<I2, V2, Vp2>& rhs);
+	template <class I1, class V1, class Vp1, class I2, class V2, class Vp2>
+	friend bool operator!=(const node_iterator<I1, V1, Vp1>& lhs, const node_iterator<I2, V2, Vp2>& rhs);
 };
 
 namespace ft
 {
 	namespace node
 	{
+		template <class I1, class V1, class Vp1, class I2, class V2, class Vp2>
+		bool operator==(const node_iterator<I1, V1, Vp1>& lhs, const node_iterator<I2, V2, Vp2>& rhs)
+		{
+			return (lhs.base_ == reinterpret_cast<I1>(rhs.base_));
+		}
+		template <class I1, class V1, class Vp1, class I2, class V2, class Vp2>
+		bool operator!=(const node_iterator<I1, V1, Vp1>& lhs, const node_iterator<I2, V2, Vp2>& rhs)
+		{
+			return !(lhs == rhs);
+		}
 		template <class I, class V, class Vp>
 		bool operator==(const node_iterator<I, V, Vp>& lhs, const node_iterator<I, V, Vp>& rhs)
 		{
