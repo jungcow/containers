@@ -39,6 +39,55 @@ namespace ft
 		typedef void type;
 	};
 
+	template <class T>
+	struct remove_const
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_const<T const>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_volatile
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_volatile<T volatile>
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_pointer
+	{
+		typedef T type;
+	};
+
+	template <class T>
+	struct remove_pointer<T*>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* const>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* volatile>
+	{
+		typedef T type;
+	};
+	template <class T>
+	struct remove_pointer<T* const volatile>
+	{
+		typedef T type;
+	};
 	/**
 	 * is_same
 	 */
@@ -60,20 +109,22 @@ namespace ft
 	template <typename T>
 	struct is_integral
 	{
-		static const bool value = ft::is_same<T, bool>::value ||
-								  ft::is_same<T, char>::value ||
-								  ft::is_same<T, char16_t>::value ||
-								  ft::is_same<T, char32_t>::value ||
-								  ft::is_same<T, wchar_t>::value ||
-								  ft::is_same<T, signed char>::value ||
-								  ft::is_same<T, short int>::value ||
-								  ft::is_same<T, int>::value ||
-								  ft::is_same<T, long int>::value ||
+		typedef typename ft::remove_const<typename ft::remove_volatile<T>::type>::type U;
+
+		static const bool value = ft::is_same<U, bool>::value ||
+								  ft::is_same<U, char>::value ||
+								  ft::is_same<U, char16_t>::value ||
+								  ft::is_same<U, char32_t>::value ||
+								  ft::is_same<U, wchar_t>::value ||
+								  ft::is_same<U, signed char>::value ||
+								  ft::is_same<U, short int>::value ||
+								  ft::is_same<U, int>::value ||
+								  ft::is_same<U, long int>::value ||
 								  //   ft::is_same<T, long long int>::value ||
-								  ft::is_same<T, unsigned char>::value ||
-								  ft::is_same<T, unsigned short int>::value ||
-								  ft::is_same<T, unsigned int>::value ||
-								  ft::is_same<T, unsigned long int>::value;
+								  ft::is_same<U, unsigned char>::value ||
+								  ft::is_same<U, unsigned short int>::value ||
+								  ft::is_same<U, unsigned int>::value ||
+								  ft::is_same<U, unsigned long int>::value;
 		//   ft::is_same<T, unsigned long long int>::value;
 	};
 
@@ -157,45 +208,6 @@ namespace ft
 
 	public:
 		static const bool value = (sizeof(test<T>(0, 0)) == 1);
-	};
-
-	template <class T>
-	struct remove_const
-	{
-		typedef T type;
-	};
-
-	template <class T>
-	struct remove_const<T const>
-	{
-		typedef T type;
-	};
-
-	template <class T>
-	struct remove_pointer
-	{
-		typedef T type;
-	};
-
-	template <class T>
-	struct remove_pointer<T*>
-	{
-		typedef T type;
-	};
-	template <class T>
-	struct remove_pointer<T* const>
-	{
-		typedef T type;
-	};
-	template <class T>
-	struct remove_pointer<T* volatile>
-	{
-		typedef T type;
-	};
-	template <class T>
-	struct remove_pointer<T* const volatile>
-	{
-		typedef T type;
 	};
 
 }
